@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Barcode Birthday Problem Explorer</title>
+  <title>DNA Variant Barcode Collision Explorer</title>
   <!-- Tailwind CSS for clean, responsive minimalist styling -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Inter & JetBrains Mono fonts -->
@@ -22,32 +22,49 @@
       }
     };
   </script>
+  <style>
+    /* Uniform, crisp baseline alignment for all HTML superscripts (multi-digit & negative exponents) */
+    sup {
+      font-size: 0.72em;
+      line-height: 0;
+      position: relative;
+      vertical-align: baseline;
+      top: -0.45em;
+      font-variant-numeric: tabular-nums;
+    }
+  </style>
 </head>
 <body class="bg-slate-50 text-slate-900 font-sans antialiased selection:bg-indigo-100 selection:text-indigo-900">
   <main class="w-full max-w-[580px] mx-auto px-3 py-3.5 sm:px-4 sm:py-4">
     <!-- Minimal Compact Header -->
-    <header class="flex flex-wrap items-center justify-between gap-2 mb-3">
-      <div class="flex items-center gap-2">
+    <header class="flex flex-col gap-0.5 mb-3">
+      <div class="flex flex-wrap items-center justify-between gap-2">
         <h1 class="text-sm sm:text-base font-bold tracking-tight text-slate-900">
-          DNA-Barcode Birthday Problem Explorer
+          DNA Variant Barcode Collision Explorer
         </h1>
+        <span class="font-mono text-[11px] font-semibold text-indigo-700 bg-indigo-50 border border-indigo-100 rounded-md px-2 py-0.5">
+          NNN[A/T][G/C]
+        </span>
       </div>
+      <p class="text-[11px] text-slate-500">
+        256 barcodes per 5 nt (<span class="font-mono">D = 256<sup>K/5</sup></span>) &middot; 1 barcode per DNA variant
+      </p>
     </header>
 
     <!-- Three Synchronized Parameter Cards -->
-    <section class="flex flex-col gap-3" aria-label="Barcode Birthday Problem Parameters">
+    <section class="flex flex-col gap-3" aria-label="DNA Variant Barcode Collision Parameters">
 
       <!-- =================================================================
-           CARD 1: Number of Barcodes (N)
+           CARD 1: Number of DNA Variants (V)
            ================================================================= -->
-      <article id="cardN" class="bg-white border border-slate-200 rounded-xl px-4 py-3 shadow-sm flex flex-col gap-2.5 transition-all duration-150">
+      <article id="cardV" class="bg-white border border-slate-200 rounded-xl px-4 py-3 shadow-sm flex flex-col gap-2.5 transition-all duration-150">
         <div class="flex flex-wrap items-center justify-between gap-2">
           <div class="flex items-center gap-2">
-            <label for="inputN" class="text-sm font-semibold text-slate-800 leading-tight">
-              Number of Barcodes (N)
+            <label for="inputV" class="text-sm font-semibold text-slate-800 leading-tight">
+              Number of DNA Variants (V)
             </label>
-            <label for="freezeN" class="freeze-pill inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-slate-200 bg-slate-100 text-slate-600 text-[11px] font-semibold cursor-pointer select-none transition-colors hover:bg-slate-200 shrink-0">
-              <input type="checkbox" id="freezeN" data-param="N" class="w-3 h-3 rounded accent-blue-600 cursor-pointer" />
+            <label for="freezeV" class="freeze-pill inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-slate-200 bg-slate-100 text-slate-600 text-[11px] font-semibold cursor-pointer select-none transition-colors hover:bg-slate-200 shrink-0">
+              <input type="checkbox" id="freezeV" data-param="V" class="w-3 h-3 rounded accent-blue-600 cursor-pointer" />
               <span class="freeze-label">Freeze</span>
             </label>
           </div>
@@ -55,9 +72,9 @@
           <div class="relative w-36 sm:w-44 shrink-0">
             <input
               type="text"
-              id="inputN"
+              id="inputV"
               inputmode="decimal"
-              aria-label="Number of Barcodes (N)"
+              aria-label="Number of DNA Variants (V)"
               class="w-full font-mono text-sm sm:text-base font-bold tabular-nums text-right bg-slate-100 text-slate-900 border border-transparent rounded-lg px-2.5 py-1 outline-none transition focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 disabled:bg-white/75 disabled:text-blue-900 disabled:border-blue-200 disabled:cursor-not-allowed"
             />
           </div>
@@ -66,11 +83,11 @@
         <div class="flex flex-col gap-1">
           <input
             type="range"
-            id="sliderN"
+            id="sliderV"
             min="1"
             max="13"
-            step="0.01"
-            aria-label="Log scale slider for Number of Barcodes N"
+            step="0.001"
+            aria-label="Log scale slider for Number of DNA Variants V"
             class="w-full h-2 bg-slate-200 rounded-lg cursor-pointer accent-indigo-600 disabled:accent-blue-600 disabled:opacity-60 disabled:cursor-not-allowed"
           />
           <!-- Exact mathematically aligned ticks at 0%, 25%, 50%, 75%, 100% -->
@@ -84,8 +101,8 @@
         </div>
 
         <div class="flex items-center justify-between text-[11px] text-slate-500 pt-1.5 border-t border-slate-100 min-h-[20px]">
-          <span>Log<sub>10</sub> scale (<span class="font-mono">10 – 10<sup>13</sup></span>)</span>
-          <span id="badgeN" class="hidden px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 font-semibold text-[10px]"></span>
+          <span>Log<sub>10</sub> scale (<span class="font-mono">10 &ndash; 10<sup>13</sup></span>)</span>
+          <span id="badgeV" class="hidden px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 font-semibold text-[10px]"></span>
         </div>
       </article>
 
@@ -113,7 +130,7 @@
               aria-label="Barcode Length (K)"
               class="w-full font-mono text-sm sm:text-base font-bold tabular-nums text-right bg-slate-100 text-slate-900 border border-transparent rounded-lg pl-2.5 pr-8 py-1 outline-none transition focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 disabled:bg-white/75 disabled:text-blue-900 disabled:border-blue-200 disabled:cursor-not-allowed"
             />
-            <span class="absolute right-2.5 font-mono text-[11px] font-semibold text-slate-400 pointer-events-none">bp</span>
+            <span class="absolute right-2.5 font-mono text-[11px] font-semibold text-slate-400 pointer-events-none">nt</span>
           </div>
         </div>
 
@@ -140,8 +157,10 @@
           </div>
         </div>
 
-        <div class="flex items-center justify-between text-[11px] text-slate-500 pt-1.5 border-t border-blue-200/60 min-h-[20px]">
-          <span>Space (4<sup>K</sup>): <span id="metaSpace" class="font-mono font-semibold text-slate-700">1.07×10⁹</span></span>
+        <div class="flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-500 pt-1.5 border-t border-blue-200/60 min-h-[20px]">
+          <span>
+            Space D = <span id="metaSpace" class="font-mono font-semibold text-slate-700">4.29 &times; 10<sup>9</sup></span>
+          </span>
           <span id="badgeK" class="hidden px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 font-semibold text-[10px]"></span>
         </div>
       </article>
@@ -151,7 +170,7 @@
            ================================================================= -->
       <article id="cardP" class="bg-white border border-slate-200 rounded-xl px-4 py-3 shadow-sm flex flex-col gap-2.5 transition-all duration-150">
         <div class="flex flex-wrap items-center justify-between gap-2">
-          <!-- Title immediately followed by Freeze button -->
+          <!-- Title immediately followed by Freeze pill -->
           <div class="flex items-center gap-2">
             <label for="inputP" class="text-sm font-semibold text-slate-800 leading-tight">
               Collision Probability (P)
@@ -205,7 +224,7 @@
         </div>
 
         <div class="flex items-center justify-between text-[11px] text-slate-500 pt-1.5 border-t border-slate-100 min-h-[20px]">
-          <span>Exact P: <span id="metaExactP" class="font-mono font-semibold text-slate-700">0.0455</span></span>
+          <span>Exact P: <span id="metaExactP" class="font-mono font-semibold text-slate-700">0.0116</span></span>
           <span id="badgeP" class="hidden px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 font-semibold text-[10px]"></span>
         </div>
       </article>
@@ -218,22 +237,25 @@
       'use strict';
 
       /* =====================================================================
-         Constants & State
+         Constants & State (Motif: NNN[A/T][G/C] -> 256 barcodes per 5 nt)
          ===================================================================== */
-      const LN4 = Math.log(4);
-      const MIN_N_SLIDER = 10;   // 10^1
-      const MAX_N_SLIDER = 1e13; // 10^13
+      const LN_256 = Math.log(256);
+      const LN_PER_NT = LN_256 / 5;          // ln(256) / 5
+      const LOG10_PER_NT = Math.log10(256) / 5;
+
+      const MIN_V_SLIDER = 10;               // 10^1
+      const MAX_V_SLIDER = 1e13;             // 10^13
       const MIN_K = 10;
       const MAX_K = 40;
-      const MIN_LOG_P = -8; // P = 10^-8 (10^-6%)
-      const MAX_LOG_P = 0;  // P = 10^0  (100%)
+      const MIN_LOG_P = -6;                  // P = 10^-6 (10^-4%)
+      const MAX_LOG_P = 0;                   // P = 10^0  (100%)
 
       const state = {
-        N: 10000,
-        K: 15,
-        P: 0.045478,
-        frozen: 'K',     // Always strictly one of: 'N' | 'K' | 'P'
-        pLogMode: false  // false = Linear (0–100%), true = Log (10^-6%–100%)
+        V: 10000,
+        K: 20,
+        P: 0.011573,
+        frozen: 'K',     // Strictly one of: 'V' | 'K' | 'P'
+        pLogMode: false  // false = Linear (0-100%), true = Log (10^-4%-100%)
       };
 
       /* =====================================================================
@@ -241,27 +263,27 @@
          ===================================================================== */
       const els = {
         cards: {
-          N: document.getElementById('cardN'),
+          V: document.getElementById('cardV'),
           K: document.getElementById('cardK'),
           P: document.getElementById('cardP')
         },
         freezes: {
-          N: document.getElementById('freezeN'),
+          V: document.getElementById('freezeV'),
           K: document.getElementById('freezeK'),
           P: document.getElementById('freezeP')
         },
         inputs: {
-          N: document.getElementById('inputN'),
+          V: document.getElementById('inputV'),
           K: document.getElementById('inputK'),
           P: document.getElementById('inputP')
         },
         sliders: {
-          N: document.getElementById('sliderN'),
+          V: document.getElementById('sliderV'),
           K: document.getElementById('sliderK'),
           P: document.getElementById('sliderP')
         },
         badges: {
-          N: document.getElementById('badgeN'),
+          V: document.getElementById('badgeV'),
           K: document.getElementById('badgeK'),
           P: document.getElementById('badgeP')
         },
@@ -273,22 +295,25 @@
       };
 
       /* =====================================================================
-         Overflow-Safe Log-Space Birthday Problem Solvers (Alphabet = 4)
+         Overflow-Safe Log-Space Birthday Problem Solvers
+         D(K) = 256^(K/5) = exp((K/5) * ln(256))
          ===================================================================== */
 
       /**
-       * Solve for P given N and K in log-space:
-       * lnLambda = ln(N) + ln(N - 1) - ln(2) - K * ln(4)
+       * Solve for P given V and K in log-space:
+       * lnLambda = ln(V) + ln(V - 1) - ln(2) - (K / 5) * ln(256)
        * P = -expm1(-exp(lnLambda))
        */
-      function solveP(N, K) {
-        if (!Number.isFinite(N) || N <= 1) return 0;
+      function solveP(V, K) {
+        if (!Number.isFinite(V) || V <= 1) return 0;
         if (!Number.isFinite(K)) return K > 0 ? 0 : 1;
-        // Pigeonhole principle: N > 4^K => P = 1
-        if (Math.log(N) > K * LN4) return 1;
 
-        const lnLambda = Math.log(N) + Math.log(N - 1) - Math.LN2 - K * LN4;
-        if (!Number.isFinite(lnLambda) || lnLambda > 6.6) return 1; // exp(6.6) > 735 => exp(-lambda) = 0
+        const lnD = K * LN_PER_NT;
+        // Pigeonhole principle: V > D(K) => P = 1
+        if (Math.log(V) > lnD) return 1;
+
+        const lnLambda = Math.log(V) + Math.log(V - 1) - Math.LN2 - lnD;
+        if (!Number.isFinite(lnLambda) || lnLambda > 6.6) return 1;
         if (lnLambda < -700) return 0;
 
         const lambda = Math.exp(lnLambda);
@@ -297,74 +322,86 @@
       }
 
       /**
-       * Solve for N given K and P in log-space:
+       * Solve for V given K and P in log-space:
        * c = -log1p(-P)
-       * lnM = ln(2) + K * ln(4) + ln(c)
-       * N = lnM > 30 ? 0.5 + exp(0.5 * lnM) : 0.5 * (1 + sqrt(1 + 4 * exp(lnM)))
+       * lnM = ln(2) + (K / 5) * ln(256) + ln(c)
+       * V = lnM > 30 ? 0.5 + exp(0.5 * lnM) : 0.5 * (1 + sqrt(1 + 4 * exp(lnM)))
        */
-      function solveN(K, P) {
+      function solveV(K, P) {
         if (!Number.isFinite(P) || P <= 0) return 2;
-        if (P >= 1) return Math.pow(4, K);
+        const lnD = K * LN_PER_NT;
+        if (P >= 1) return Math.exp(lnD);
 
         const safeP = Math.min(P, 1 - 1e-15);
         const c = -Math.log1p(-safeP);
         if (c <= 0 || !Number.isFinite(c)) return 2;
 
-        const lnM = Math.LN2 + K * LN4 + Math.log(c);
+        const lnM = Math.LN2 + lnD + Math.log(c);
         if (!Number.isFinite(lnM)) return Infinity;
 
-        const n = lnM > 30
+        const v = lnM > 30
           ? 0.5 + Math.exp(0.5 * lnM)
           : 0.5 * (1 + Math.sqrt(1 + 4 * Math.exp(lnM)));
 
-        return Math.max(2, n);
+        return Math.max(2, v);
       }
 
       /**
-       * Solve for K given N and P in log-space:
-       * K = (ln(N) + ln(N - 1) - ln(2) - ln(-log1p(-P))) / ln(4)
+       * Solve for K given V and P in log-space:
+       * K = (ln(V) + ln(V - 1) - ln(2) - ln(-log1p(-P))) / (ln(256) / 5)
        */
-      function solveK(N, P) {
-        if (!Number.isFinite(N) || N <= 1) return MAX_K;
+      function solveK(V, P) {
+        if (!Number.isFinite(V) || V <= 1) return MAX_K;
         if (!Number.isFinite(P) || P <= 0) return Infinity;
-        if (P >= 1) return Math.max(0.1, Math.log(N) / LN4);
+        if (P >= 1) return Math.max(0.1, Math.log(V) / LN_PER_NT);
 
         const safeP = Math.max(1e-15, Math.min(P, 1 - 1e-15));
         const c = -Math.log1p(-safeP);
         if (c <= 0 || !Number.isFinite(c)) return Infinity;
 
-        const k = (Math.log(N) + Math.log(N - 1) - Math.LN2 - Math.log(c)) / LN4;
+        const k = (Math.log(V) + Math.log(V - 1) - Math.LN2 - Math.log(c)) / LN_PER_NT;
         return Number.isFinite(k) ? Math.max(0.1, k) : MAX_K;
       }
 
       /* =====================================================================
-         Formatting & Parsing Helpers
+         Formatting & Parsing Helpers (Semantic HTML <sup> only; zero Unicode superscripts)
          ===================================================================== */
-      function toSuperscript(num) {
-        const map = { '-': '⁻', '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹' };
-        return String(num).split('').map(c => map[c] || c).join('');
+
+      /**
+       * Format barcode space D(K) = 256^(K/5) as semantic HTML with <sup> tags.
+       * Uses log10 directly to remain overflow-safe for any K.
+       */
+      function formatSpaceHTML(K) {
+        if (!Number.isFinite(K)) return '&infin;';
+        const safeK = Math.max(0, K);
+        const log10D = safeK * LOG10_PER_NT;
+        if (log10D < 7) {
+          return Math.round(Math.pow(10, log10D)).toLocaleString('en-US');
+        }
+        const exp = Math.floor(log10D);
+        const mantissa = Math.pow(10, log10D - exp);
+        if (Number(mantissa.toFixed(2)) >= 10) {
+          return `1.00 &times; 10<sup>${exp + 1}</sup>`;
+        }
+        return `${mantissa.toFixed(2)} &times; 10<sup>${exp}</sup>`;
       }
 
-      function formatSci(val, sig = 2) {
-        if (!Number.isFinite(val)) return '∞';
-        if (val === 0) return '0';
-        const exp = Math.floor(Math.log10(Math.abs(val)));
-        const mantissa = val / Math.pow(10, exp);
-        return `${mantissa.toFixed(sig)}×10${toSuperscript(exp)}`;
+      function formatExactPHTML(P) {
+        if (P <= 0) return '0';
+        if (P >= 1) return '1.0000';
+        if (P >= 0.001) return P.toFixed(4);
+        const exp = Math.floor(Math.log10(P));
+        const mantissa = P / Math.pow(10, exp);
+        if (Number(mantissa.toFixed(2)) >= 10) {
+          return `1.00 &times; 10<sup>${exp + 1}</sup>`;
+        }
+        return `${mantissa.toFixed(2)} &times; 10<sup>${exp}</sup>`;
       }
 
-      function formatN(val) {
+      function formatV(val) {
         if (!Number.isFinite(val)) return '∞';
         if (val > 1e15) return val.toExponential(2);
         return Math.round(Math.max(2, val)).toLocaleString('en-US');
-      }
-
-      function formatSpace(K) {
-        if (!Number.isFinite(K)) return '∞';
-        const D = Math.pow(4, Math.max(0, K));
-        if (!Number.isFinite(D)) return '∞';
-        if (D < 1e7) return Math.round(D).toLocaleString('en-US');
-        return formatSci(D, 2);
       }
 
       function formatPercent(P) {
@@ -377,13 +414,6 @@
         return pct.toExponential(2);
       }
 
-      function formatExactP(P) {
-        if (P <= 0) return '0';
-        if (P >= 1) return '1.0000';
-        if (P >= 0.001) return P.toFixed(4);
-        return P.toExponential(2);
-      }
-
       function parseNum(str) {
         const cleaned = String(str).replace(/,/g, '').replace(/%/g, '').trim();
         if (!cleaned) return NaN;
@@ -394,7 +424,7 @@
          Freeze State Styling & Enforcement (Always Exactly 1 Frozen)
          ===================================================================== */
       function updateFreezeUI() {
-        ['N', 'K', 'P'].forEach(param => {
+        ['V', 'K', 'P'].forEach(param => {
           const isFrozen = state.frozen === param;
           const card = els.cards[param];
           const checkbox = els.freezes[param];
@@ -407,7 +437,7 @@
           els.sliders[param].disabled = isFrozen;
           label.textContent = isFrozen ? 'Frozen' : 'Freeze';
 
-          // Card border & background
+          // Card highlight
           card.classList.toggle('bg-blue-50/70', isFrozen);
           card.classList.toggle('border-blue-400', isFrozen);
           card.classList.toggle('ring-2', isFrozen);
@@ -415,7 +445,7 @@
           card.classList.toggle('bg-white', !isFrozen);
           card.classList.toggle('border-slate-200', !isFrozen);
 
-          // Pill badge styling
+          // Freeze pill highlight
           pill.classList.toggle('bg-blue-600', isFrozen);
           pill.classList.toggle('border-blue-600', isFrozen);
           pill.classList.toggle('text-white', isFrozen);
@@ -434,13 +464,13 @@
       /* =====================================================================
          Synchronized Update & Rendering
          ===================================================================== */
-      function setBadge(param, text) {
+      function setBadgeHTML(param, html) {
         const badge = els.badges[param];
-        if (text) {
-          badge.textContent = text;
+        if (html) {
+          badge.innerHTML = html;
           badge.classList.remove('hidden');
         } else {
-          badge.textContent = '';
+          badge.innerHTML = '';
           badge.classList.add('hidden');
         }
       }
@@ -450,55 +480,56 @@
         state[changedParam] = newVal;
 
         const held = state.frozen;
-        if (changedParam === 'N') {
-          if (held === 'K') state.P = solveP(state.N, state.K);
-          else state.K = solveK(state.N, state.P);
+        if (changedParam === 'V') {
+          if (held === 'K') state.P = solveP(state.V, state.K);
+          else state.K = solveK(state.V, state.P);
         } else if (changedParam === 'K') {
-          if (held === 'N') state.P = solveP(state.N, state.K);
-          else state.N = solveN(state.K, state.P);
+          if (held === 'V') state.P = solveP(state.V, state.K);
+          else state.V = solveV(state.K, state.P);
         } else if (changedParam === 'P') {
-          if (held === 'K') state.N = solveN(state.K, state.P);
-          else state.K = solveK(state.N, state.P);
+          if (held === 'K') state.V = solveV(state.K, state.P);
+          else state.K = solveK(state.V, state.P);
         }
 
         render(changedParam);
       }
 
       function render(activeInput = null) {
-        // 1. N (slider range 10^1 to 10^13)
-        const clampedN = Math.min(MAX_N_SLIDER, Math.max(MIN_N_SLIDER, Number.isFinite(state.N) ? state.N : MAX_N_SLIDER));
-        els.sliders.N.value = Math.log10(clampedN);
-        if (activeInput !== 'N' || document.activeElement !== els.inputs.N) {
-          els.inputs.N.value = formatN(state.N);
+        // 1. V (slider range 10^1 to 10^13)
+        const clampedV = Math.min(MAX_V_SLIDER, Math.max(MIN_V_SLIDER, Number.isFinite(state.V) ? state.V : MAX_V_SLIDER));
+        els.sliders.V.value = Math.log10(clampedV);
+        if (activeInput !== 'V' || document.activeElement !== els.inputs.V) {
+          els.inputs.V.value = formatV(state.V);
         }
-        if (state.N > MAX_N_SLIDER) setBadge('N', '> 10¹³');
-        else if (state.N < MIN_N_SLIDER) setBadge('N', '< 10');
-        else setBadge('N', '');
+        if (state.V > MAX_V_SLIDER) setBadgeHTML('V', 'clamped (&gt; 10<sup>13</sup>)');
+        else if (state.V < MIN_V_SLIDER) setBadgeHTML('V', 'clamped (&lt; 10)');
+        else setBadgeHTML('V', '');
 
-        // 2. K (slider range 10 to 40)
+        // 2. K (slider range 10 to 40 nt)
         const clampedK = Math.min(MAX_K, Math.max(MIN_K, Number.isFinite(state.K) ? state.K : MAX_K));
         els.sliders.K.value = clampedK;
         if (activeInput !== 'K' || document.activeElement !== els.inputs.K) {
           els.inputs.K.value = Number.isFinite(state.K) ? state.K.toFixed(1) : '∞';
         }
-        els.metaSpace.textContent = formatSpace(state.K);
-        if (state.K > MAX_K) setBadge('K', '> 40');
-        else if (state.K < MIN_K) setBadge('K', '< 10');
-        else setBadge('K', '');
+        els.metaSpace.innerHTML = formatSpaceHTML(state.K);
 
-        // 3. P (Linear 0–100% or Log 10^-6%–100%)
+        if (state.K > MAX_K) setBadgeHTML('K', 'clamped (&gt; 40 nt)');
+        else if (state.K < MIN_K) setBadgeHTML('K', 'clamped (&lt; 10 nt)');
+        else setBadgeHTML('K', '');
+
+        // 3. P (Linear 0-100% or Log 10^-4%-100%)
         if (state.pLogMode) {
-          const safeP = Math.max(1e-8, Math.min(1, state.P));
+          const safeP = Math.max(1e-6, Math.min(1, state.P));
           els.sliders.P.value = Math.log10(safeP);
-          setBadge('P', state.P < 1e-8 ? '< 10⁻⁶%' : '');
+          setBadgeHTML('P', state.P < 1e-6 ? 'clamped (&lt; 10<sup>-4</sup>%)' : '');
         } else {
           els.sliders.P.value = Math.min(100, Math.max(0, state.P * 100));
-          setBadge('P', '');
+          setBadgeHTML('P', '');
         }
         if (activeInput !== 'P' || document.activeElement !== els.inputs.P) {
           els.inputs.P.value = formatPercent(state.P);
         }
-        els.metaExactP.textContent = formatExactP(state.P);
+        els.metaExactP.innerHTML = formatExactPHTML(state.P);
       }
 
       function setPLogMode(isLog) {
@@ -515,12 +546,12 @@
 
           els.sliders.P.min = String(MIN_LOG_P);
           els.sliders.P.max = String(MAX_LOG_P);
-          els.sliders.P.step = '0.01';
+          els.sliders.P.step = '0.001';
+          // Evenly spaced ticks for log10(P) in [-6, -4, -2, 0] -> 10^-4%, 10^-2%, 1%, 100%
           els.ticksP.innerHTML =
-            '<span class="absolute left-0">10<sup>-6</sup>%</span>' +
-            '<span class="absolute left-1/4 -translate-x-1/2">10<sup>-4</sup>%</span>' +
-            '<span class="absolute left-1/2 -translate-x-1/2">10<sup>-2</sup>%</span>' +
-            '<span class="absolute left-3/4 -translate-x-1/2">1%</span>' +
+            '<span class="absolute left-0">10<sup>-4</sup>%</span>' +
+            '<span class="absolute left-1/3 -translate-x-1/2">10<sup>-2</sup>%</span>' +
+            '<span class="absolute left-2/3 -translate-x-1/2">1%</span>' +
             '<span class="absolute right-0">100%</span>';
         } else {
           els.btnPLinear.classList.add(...activeClasses);
@@ -546,7 +577,7 @@
          ===================================================================== */
 
       // Mutually exclusive Freeze checkboxes (strictly 1 always frozen)
-      ['N', 'K', 'P'].forEach(param => {
+      ['V', 'K', 'P'].forEach(param => {
         els.freezes[param].addEventListener('change', (e) => {
           if (e.target.checked) {
             state.frozen = param;
@@ -558,9 +589,9 @@
       });
 
       // Sliders
-      els.sliders.N.addEventListener('input', (e) => {
+      els.sliders.V.addEventListener('input', (e) => {
         const v = parseFloat(e.target.value);
-        onParamChange('N', Math.round(Math.pow(10, v)));
+        onParamChange('V', Math.round(Math.pow(10, v)));
       });
 
       els.sliders.K.addEventListener('input', (e) => {
@@ -574,13 +605,13 @@
       });
 
       // Editable Numeric Inputs
-      els.inputs.N.addEventListener('input', (e) => {
+      els.inputs.V.addEventListener('input', (e) => {
         const val = parseNum(e.target.value);
         if (Number.isFinite(val) && val >= 2) {
-          onParamChange('N', Math.round(val));
+          onParamChange('V', Math.round(val));
         }
       });
-      els.inputs.N.addEventListener('blur', () => render());
+      els.inputs.V.addEventListener('blur', () => render());
 
       els.inputs.K.addEventListener('input', (e) => {
         const val = parseNum(e.target.value);
@@ -603,12 +634,12 @@
       els.btnPLog.addEventListener('click', () => setPLogMode(true));
 
       /* =====================================================================
-         Initialize (Default: K = 15 frozen, N = 10,000, P ≈ 4.55%)
+         Initialize (Default: K = 20 nt frozen, V = 10,000, P ≈ 1.16%)
          ===================================================================== */
       window.addEventListener('DOMContentLoaded', () => {
-        state.K = 15;
-        state.N = 10000;
-        state.P = solveP(state.N, state.K);
+        state.K = 20;
+        state.V = 10000;
+        state.P = solveP(state.V, state.K);
         state.frozen = 'K';
 
         updateFreezeUI();
