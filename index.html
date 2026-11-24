@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DNA Birthday Problem Explorer</title>
+  <title>Barcode Birthday Problem Explorer</title>
   <!-- Tailwind CSS for clean, responsive minimalist styling -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Inter & JetBrains Mono fonts -->
@@ -24,162 +24,165 @@
   </script>
 </head>
 <body class="bg-slate-50 text-slate-900 font-sans antialiased selection:bg-indigo-100 selection:text-indigo-900">
-  <main class="w-full max-w-5xl mx-auto px-3 py-4 sm:px-5 sm:py-5">
-    <!-- Compact Header -->
-    <header class="flex flex-wrap items-center justify-between gap-2 mb-4">
-      <div class="flex items-center gap-2.5">
-        <div class="flex items-center gap-1" aria-label="4-letter alphabet A C G T">
-          <span class="inline-flex items-center justify-center w-5 h-5 rounded text-[11px] font-mono font-bold bg-emerald-100 text-emerald-800">A</span>
-          <span class="inline-flex items-center justify-center w-5 h-5 rounded text-[11px] font-mono font-bold bg-blue-100 text-blue-800">C</span>
-          <span class="inline-flex items-center justify-center w-5 h-5 rounded text-[11px] font-mono font-bold bg-amber-100 text-amber-800">G</span>
-          <span class="inline-flex items-center justify-center w-5 h-5 rounded text-[11px] font-mono font-bold bg-rose-100 text-rose-800">T</span>
-        </div>
-        <h1 class="text-base sm:text-lg font-bold tracking-tight text-slate-900">
-          Birthday Problem Explorer
+  <main class="w-full max-w-[580px] mx-auto px-3 py-3.5 sm:px-4 sm:py-4">
+    <!-- Minimal Compact Header -->
+    <header class="flex flex-wrap items-center justify-between gap-2 mb-3">
+      <div class="flex items-center gap-2">
+        <h1 class="text-sm sm:text-base font-bold tracking-tight text-slate-900">
+          DNA-Barcode Birthday Problem Explorer
         </h1>
       </div>
-      <p class="text-xs text-slate-500">
-        Freeze 1 parameter &middot; adjust either of the other 2 (<span class="font-mono">D = 4<sup>K</sup></span>)
-      </p>
     </header>
 
-    <!-- EXACTLY THREE Parameter Cards -->
-    <section class="grid grid-cols-1 md:grid-cols-3 gap-3.5" aria-label="Birthday Problem Parameters">
+    <!-- Three Synchronized Parameter Cards -->
+    <section class="flex flex-col gap-3" aria-label="Barcode Birthday Problem Parameters">
 
       <!-- =================================================================
-           CARD 1: Number of Sequences (N)
+           CARD 1: Number of Barcodes (N)
            ================================================================= -->
-      <article id="cardN" class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col gap-3 transition-all duration-150">
-        <div class="flex items-center justify-between gap-2">
-          <label for="inputN" class="text-sm font-semibold text-slate-800 leading-tight">
-            Number of Sequences (N)
-          </label>
-          <label for="freezeN" class="freeze-pill inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-slate-200 bg-slate-100 text-slate-600 text-xs font-semibold cursor-pointer select-none transition-colors hover:bg-slate-200 shrink-0">
-            <input type="checkbox" id="freezeN" data-param="N" class="w-3.5 h-3.5 rounded accent-blue-600 cursor-pointer" />
-            <span class="freeze-label">Freeze</span>
-          </label>
-        </div>
+      <article id="cardN" class="bg-white border border-slate-200 rounded-xl px-4 py-3 shadow-sm flex flex-col gap-2.5 transition-all duration-150">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-2">
+            <label for="inputN" class="text-sm font-semibold text-slate-800 leading-tight">
+              Number of Barcodes (N)
+            </label>
+            <label for="freezeN" class="freeze-pill inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-slate-200 bg-slate-100 text-slate-600 text-[11px] font-semibold cursor-pointer select-none transition-colors hover:bg-slate-200 shrink-0">
+              <input type="checkbox" id="freezeN" data-param="N" class="w-3 h-3 rounded accent-blue-600 cursor-pointer" />
+              <span class="freeze-label">Freeze</span>
+            </label>
+          </div>
 
-        <div class="relative">
-          <input
-            type="text"
-            id="inputN"
-            inputmode="decimal"
-            aria-label="Number of Sequences (N)"
-            class="w-full font-mono text-lg font-bold tabular-nums bg-slate-100 text-slate-900 border border-transparent rounded-lg px-3 py-1.5 outline-none transition focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 disabled:bg-white/70 disabled:text-blue-900 disabled:border-blue-200 disabled:cursor-not-allowed"
-          />
+          <div class="relative w-36 sm:w-44 shrink-0">
+            <input
+              type="text"
+              id="inputN"
+              inputmode="decimal"
+              aria-label="Number of Barcodes (N)"
+              class="w-full font-mono text-sm sm:text-base font-bold tabular-nums text-right bg-slate-100 text-slate-900 border border-transparent rounded-lg px-2.5 py-1 outline-none transition focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 disabled:bg-white/75 disabled:text-blue-900 disabled:border-blue-200 disabled:cursor-not-allowed"
+            />
+          </div>
         </div>
 
         <div class="flex flex-col gap-1">
           <input
             type="range"
             id="sliderN"
-            min="0.30103"
-            max="9"
-            step="0.001"
-            aria-label="Log scale slider for Number of Sequences N"
+            min="1"
+            max="13"
+            step="0.01"
+            aria-label="Log scale slider for Number of Barcodes N"
             class="w-full h-2 bg-slate-200 rounded-lg cursor-pointer accent-indigo-600 disabled:accent-blue-600 disabled:opacity-60 disabled:cursor-not-allowed"
           />
-          <div class="flex justify-between font-mono text-[10px] text-slate-400 px-0.5">
-            <span>2</span>
-            <span>10<sup>2</sup></span>
-            <span>10<sup>4</sup></span>
-            <span>10<sup>6</sup></span>
-            <span>10<sup>9</sup></span>
+          <!-- Exact mathematically aligned ticks at 0%, 25%, 50%, 75%, 100% -->
+          <div class="relative h-4 mx-[7px] font-mono text-[10px] text-slate-400 select-none">
+            <span class="absolute left-0">10</span>
+            <span class="absolute left-1/4 -translate-x-1/2">10<sup>4</sup></span>
+            <span class="absolute left-1/2 -translate-x-1/2">10<sup>7</sup></span>
+            <span class="absolute left-3/4 -translate-x-1/2">10<sup>10</sup></span>
+            <span class="absolute right-0">10<sup>13</sup></span>
           </div>
         </div>
 
-        <div class="flex items-center justify-between text-[11px] text-slate-500 pt-1.5 border-t border-slate-100 min-h-[22px]">
-          <span>Log scale (<span class="font-mono">2–10<sup>9</sup></span>)</span>
+        <div class="flex items-center justify-between text-[11px] text-slate-500 pt-1.5 border-t border-slate-100 min-h-[20px]">
+          <span>Log<sub>10</sub> scale (<span class="font-mono">10 – 10<sup>13</sup></span>)</span>
           <span id="badgeN" class="hidden px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 font-semibold text-[10px]"></span>
         </div>
       </article>
 
       <!-- =================================================================
-           CARD 2: Sequence Length (K) — Frozen by default
+           CARD 2: Barcode Length (K) — Frozen by default
            ================================================================= -->
-      <article id="cardK" class="bg-blue-50/70 border border-blue-400 rounded-xl p-4 shadow-sm ring-2 ring-blue-100 flex flex-col gap-3 transition-all duration-150">
-        <div class="flex items-center justify-between gap-2">
-          <label for="inputK" class="text-sm font-semibold text-slate-800 leading-tight">
-            Sequence Length (K)
-          </label>
-          <label for="freezeK" class="freeze-pill inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-blue-600 bg-blue-600 text-white text-xs font-semibold cursor-pointer select-none transition-colors shrink-0">
-            <input type="checkbox" id="freezeK" data-param="K" checked class="w-3.5 h-3.5 rounded accent-blue-800 cursor-pointer" />
-            <span class="freeze-label">Frozen</span>
-          </label>
-        </div>
+      <article id="cardK" class="bg-blue-50/70 border border-blue-400 rounded-xl px-4 py-3 shadow-sm ring-2 ring-blue-100 flex flex-col gap-2.5 transition-all duration-150">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-2">
+            <label for="inputK" class="text-sm font-semibold text-slate-800 leading-tight">
+              Barcode Length (K)
+            </label>
+            <label for="freezeK" class="freeze-pill inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-blue-600 bg-blue-600 text-white text-[11px] font-semibold cursor-pointer select-none transition-colors shrink-0">
+              <input type="checkbox" id="freezeK" data-param="K" checked class="w-3 h-3 rounded accent-blue-800 cursor-pointer" />
+              <span class="freeze-label">Frozen</span>
+            </label>
+          </div>
 
-        <div class="relative flex items-center">
-          <input
-            type="text"
-            id="inputK"
-            inputmode="decimal"
-            disabled
-            aria-label="Sequence Length (K)"
-            class="w-full font-mono text-lg font-bold tabular-nums bg-slate-100 text-slate-900 border border-transparent rounded-lg pl-3 pr-10 py-1.5 outline-none transition focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 disabled:bg-white/70 disabled:text-blue-900 disabled:border-blue-200 disabled:cursor-not-allowed"
-          />
-          <span class="absolute right-3 font-mono text-xs font-semibold text-slate-400 pointer-events-none">bp</span>
+          <div class="relative flex items-center w-28 sm:w-32 shrink-0">
+            <input
+              type="text"
+              id="inputK"
+              inputmode="decimal"
+              disabled
+              aria-label="Barcode Length (K)"
+              class="w-full font-mono text-sm sm:text-base font-bold tabular-nums text-right bg-slate-100 text-slate-900 border border-transparent rounded-lg pl-2.5 pr-8 py-1 outline-none transition focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 disabled:bg-white/75 disabled:text-blue-900 disabled:border-blue-200 disabled:cursor-not-allowed"
+            />
+            <span class="absolute right-2.5 font-mono text-[11px] font-semibold text-slate-400 pointer-events-none">bp</span>
+          </div>
         </div>
 
         <div class="flex flex-col gap-1">
           <input
             type="range"
             id="sliderK"
-            min="1"
-            max="30"
+            min="10"
+            max="40"
             step="0.1"
             disabled
-            aria-label="Linear slider for Sequence Length K"
+            aria-label="Linear slider for Barcode Length K"
             class="w-full h-2 bg-slate-200 rounded-lg cursor-pointer accent-indigo-600 disabled:accent-blue-600 disabled:opacity-60 disabled:cursor-not-allowed"
           />
-          <div class="flex justify-between font-mono text-[10px] text-slate-400 px-0.5">
-            <span>1</span>
-            <span>10</span>
-            <span>20</span>
-            <span>30</span>
+          <!-- Exact evenly spaced ticks from 10 to 40 -->
+          <div class="relative h-4 mx-[7px] font-mono text-[10px] text-slate-400 select-none">
+            <span class="absolute left-0">10</span>
+            <span class="absolute left-[16.6667%] -translate-x-1/2">15</span>
+            <span class="absolute left-[33.3333%] -translate-x-1/2">20</span>
+            <span class="absolute left-1/2 -translate-x-1/2">25</span>
+            <span class="absolute left-[66.6667%] -translate-x-1/2">30</span>
+            <span class="absolute left-[83.3333%] -translate-x-1/2">35</span>
+            <span class="absolute right-0">40</span>
           </div>
         </div>
 
-        <div class="flex items-center justify-between text-[11px] text-slate-500 pt-1.5 border-t border-blue-200/60 min-h-[22px]">
-          <span>Space: <span id="metaSpace" class="font-mono font-semibold text-slate-700">1,048,576</span></span>
+        <div class="flex items-center justify-between text-[11px] text-slate-500 pt-1.5 border-t border-blue-200/60 min-h-[20px]">
+          <span>Space (4<sup>K</sup>): <span id="metaSpace" class="font-mono font-semibold text-slate-700">1.07×10⁹</span></span>
           <span id="badgeK" class="hidden px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 font-semibold text-[10px]"></span>
         </div>
       </article>
 
       <!-- =================================================================
-           CARD 3: Collision Probability (P) — Single card, single slider
+           CARD 3: Collision Probability (P)
            ================================================================= -->
-      <article id="cardP" class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col gap-3 transition-all duration-150">
-        <div class="flex items-center justify-between gap-1.5 flex-wrap">
-          <label for="inputP" class="text-sm font-semibold text-slate-800 leading-tight">
-            Collision Probability (P)
-          </label>
-          <div class="flex items-center gap-1.5 shrink-0">
-            <!-- Linear / Log scale toggle pill for THIS single slider -->
-            <div class="inline-flex bg-slate-100 border border-slate-200 rounded-full p-0.5" role="group" aria-label="Probability slider scale">
-              <button type="button" id="btnPLinear" class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-white text-indigo-600 shadow-sm transition">
-                Linear
-              </button>
-              <button type="button" id="btnPLog" class="px-2 py-0.5 rounded-full text-[11px] font-semibold text-slate-500 hover:text-slate-700 transition">
-                Log
-              </button>
-            </div>
-            <label for="freezeP" class="freeze-pill inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-slate-200 bg-slate-100 text-slate-600 text-xs font-semibold cursor-pointer select-none transition-colors hover:bg-slate-200">
-              <input type="checkbox" id="freezeP" data-param="P" class="w-3.5 h-3.5 rounded accent-blue-600 cursor-pointer" />
+      <article id="cardP" class="bg-white border border-slate-200 rounded-xl px-4 py-3 shadow-sm flex flex-col gap-2.5 transition-all duration-150">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <!-- Title immediately followed by Freeze button -->
+          <div class="flex items-center gap-2">
+            <label for="inputP" class="text-sm font-semibold text-slate-800 leading-tight">
+              Collision Probability (P)
+            </label>
+            <label for="freezeP" class="freeze-pill inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-slate-200 bg-slate-100 text-slate-600 text-[11px] font-semibold cursor-pointer select-none transition-colors hover:bg-slate-200 shrink-0">
+              <input type="checkbox" id="freezeP" data-param="P" class="w-3 h-3 rounded accent-blue-600 cursor-pointer" />
               <span class="freeze-label">Freeze</span>
             </label>
           </div>
-        </div>
 
-        <div class="relative flex items-center">
-          <input
-            type="text"
-            id="inputP"
-            inputmode="decimal"
-            aria-label="Collision Probability percentage P"
-            class="w-full font-mono text-lg font-bold tabular-nums bg-slate-100 text-slate-900 border border-transparent rounded-lg pl-3 pr-8 py-1.5 outline-none transition focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 disabled:bg-white/70 disabled:text-blue-900 disabled:border-blue-200 disabled:cursor-not-allowed"
-          />
-          <span class="absolute right-3 font-mono text-sm font-semibold text-slate-400 pointer-events-none">%</span>
+          <!-- Lin / Log scale toggle + Numeric input neatly aligned on the right -->
+          <div class="flex items-center gap-2 shrink-0">
+            <div class="inline-flex bg-slate-100 border border-slate-200 rounded-full p-0.5" role="group" aria-label="Probability slider scale">
+              <button type="button" id="btnPLinear" class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-white text-indigo-600 shadow-sm transition">
+                Lin
+              </button>
+              <button type="button" id="btnPLog" class="px-2 py-0.5 rounded-full text-[10px] font-semibold text-slate-500 hover:text-slate-700 transition">
+                Log
+              </button>
+            </div>
+            <div class="relative flex items-center w-28 sm:w-32">
+              <input
+                type="text"
+                id="inputP"
+                inputmode="decimal"
+                aria-label="Collision Probability percentage P"
+                class="w-full font-mono text-sm sm:text-base font-bold tabular-nums text-right bg-slate-100 text-slate-900 border border-transparent rounded-lg pl-2.5 pr-7 py-1 outline-none transition focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 disabled:bg-white/75 disabled:text-blue-900 disabled:border-blue-200 disabled:cursor-not-allowed"
+              />
+              <span class="absolute right-2.5 font-mono text-xs font-semibold text-slate-400 pointer-events-none">%</span>
+            </div>
+          </div>
         </div>
 
         <div class="flex flex-col gap-1">
@@ -192,17 +195,17 @@
             aria-label="Slider for Collision Probability P"
             class="w-full h-2 bg-slate-200 rounded-lg cursor-pointer accent-indigo-600 disabled:accent-blue-600 disabled:opacity-60 disabled:cursor-not-allowed"
           />
-          <div id="ticksP" class="flex justify-between font-mono text-[10px] text-slate-400 px-0.5">
-            <span>0%</span>
-            <span>25%</span>
-            <span>50%</span>
-            <span>75%</span>
-            <span>100%</span>
+          <div id="ticksP" class="relative h-4 mx-[7px] font-mono text-[10px] text-slate-400 select-none">
+            <span class="absolute left-0">0%</span>
+            <span class="absolute left-1/4 -translate-x-1/2">25%</span>
+            <span class="absolute left-1/2 -translate-x-1/2">50%</span>
+            <span class="absolute left-3/4 -translate-x-1/2">75%</span>
+            <span class="absolute right-0">100%</span>
           </div>
         </div>
 
-        <div class="flex items-center justify-between text-[11px] text-slate-500 pt-1.5 border-t border-slate-100 min-h-[22px]">
-          <span>Exact P: <span id="metaExactP" class="font-mono font-semibold text-slate-700">0.5000</span></span>
+        <div class="flex items-center justify-between text-[11px] text-slate-500 pt-1.5 border-t border-slate-100 min-h-[20px]">
+          <span>Exact P: <span id="metaExactP" class="font-mono font-semibold text-slate-700">0.0455</span></span>
           <span id="badgeP" class="hidden px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 font-semibold text-[10px]"></span>
         </div>
       </article>
@@ -218,19 +221,19 @@
          Constants & State
          ===================================================================== */
       const LN4 = Math.log(4);
-      const MIN_N = 2;
-      const MAX_N = 1e9;
-      const MIN_K = 1;
-      const MAX_K = 30;
-      const MIN_LOG_P = -6; // 10^-6 = 0.0001%
-      const MAX_LOG_P = 0;  // 10^0  = 100%
+      const MIN_N_SLIDER = 10;   // 10^1
+      const MAX_N_SLIDER = 1e13; // 10^13
+      const MIN_K = 10;
+      const MAX_K = 40;
+      const MIN_LOG_P = -8; // P = 10^-8 (10^-6%)
+      const MAX_LOG_P = 0;  // P = 10^0  (100%)
 
       const state = {
-        N: 1206,
-        K: 10,
-        P: 0.5,
-        frozen: 'K',     // Always one of: 'N' | 'K' | 'P'
-        pLogMode: false  // false = Linear (0–100%), true = Log (10^-6–1)
+        N: 10000,
+        K: 15,
+        P: 0.045478,
+        frozen: 'K',     // Always strictly one of: 'N' | 'K' | 'P'
+        pLogMode: false  // false = Linear (0–100%), true = Log (10^-6%–100%)
       };
 
       /* =====================================================================
@@ -270,53 +273,67 @@
       };
 
       /* =====================================================================
-         Numerically Stable Birthday Problem Solvers (Alphabet = 4, D = 4^K)
+         Overflow-Safe Log-Space Birthday Problem Solvers (Alphabet = 4)
          ===================================================================== */
 
       /**
-       * Solve for P given N and K:
-       * P = -expm1(-(N * (N - 1)) / (2 * 4^K))
+       * Solve for P given N and K in log-space:
+       * lnLambda = ln(N) + ln(N - 1) - ln(2) - K * ln(4)
+       * P = -expm1(-exp(lnLambda))
        */
       function solveP(N, K) {
         if (!Number.isFinite(N) || N <= 1) return 0;
         if (!Number.isFinite(K)) return K > 0 ? 0 : 1;
-        const D = Math.pow(4, K);
-        if (N > D) return 1;
-        const lambda = (N * (N - 1)) / (2 * D);
-        if (!Number.isFinite(lambda) || lambda >= 700) return 1;
-        if (lambda <= 0) return 0;
+        // Pigeonhole principle: N > 4^K => P = 1
+        if (Math.log(N) > K * LN4) return 1;
+
+        const lnLambda = Math.log(N) + Math.log(N - 1) - Math.LN2 - K * LN4;
+        if (!Number.isFinite(lnLambda) || lnLambda > 6.6) return 1; // exp(6.6) > 735 => exp(-lambda) = 0
+        if (lnLambda < -700) return 0;
+
+        const lambda = Math.exp(lnLambda);
         const p = -Math.expm1(-lambda);
         return Math.min(1, Math.max(0, p));
       }
 
       /**
-       * Solve for N given K and P:
-       * N = (1 + sqrt(1 - 8 * 4^K * log1p(-P))) / 2
+       * Solve for N given K and P in log-space:
+       * c = -log1p(-P)
+       * lnM = ln(2) + K * ln(4) + ln(c)
+       * N = lnM > 30 ? 0.5 + exp(0.5 * lnM) : 0.5 * (1 + sqrt(1 + 4 * exp(lnM)))
        */
       function solveN(K, P) {
-        const D = Math.pow(4, K);
-        if (!Number.isFinite(P) || P <= 0) return MIN_N;
-        if (P >= 1) return D;
+        if (!Number.isFinite(P) || P <= 0) return 2;
+        if (P >= 1) return Math.pow(4, K);
+
         const safeP = Math.min(P, 1 - 1e-15);
-        const radicand = 1 - 8 * D * Math.log1p(-safeP);
-        if (!Number.isFinite(radicand) || radicand < 1) return MIN_N;
-        const n = (1 + Math.sqrt(radicand)) / 2;
-        return Math.max(MIN_N, n);
+        const c = -Math.log1p(-safeP);
+        if (c <= 0 || !Number.isFinite(c)) return 2;
+
+        const lnM = Math.LN2 + K * LN4 + Math.log(c);
+        if (!Number.isFinite(lnM)) return Infinity;
+
+        const n = lnM > 30
+          ? 0.5 + Math.exp(0.5 * lnM)
+          : 0.5 * (1 + Math.sqrt(1 + 4 * Math.exp(lnM)));
+
+        return Math.max(2, n);
       }
 
       /**
-       * Solve for K given N and P:
-       * K = log((N * (N - 1)) / (-2 * log1p(-P))) / log(4)
+       * Solve for K given N and P in log-space:
+       * K = (ln(N) + ln(N - 1) - ln(2) - ln(-log1p(-P))) / ln(4)
        */
       function solveK(N, P) {
         if (!Number.isFinite(N) || N <= 1) return MAX_K;
-        if (!Number.isFinite(P) || P <= 0) return MAX_K;
+        if (!Number.isFinite(P) || P <= 0) return Infinity;
         if (P >= 1) return Math.max(0.1, Math.log(N) / LN4);
+
         const safeP = Math.max(1e-15, Math.min(P, 1 - 1e-15));
-        const denom = -2 * Math.log1p(-safeP);
-        if (denom <= 0 || !Number.isFinite(denom)) return MAX_K;
-        // Log-space subtraction avoids N*(N-1) overflow for large N
-        const k = (Math.log(N) + Math.log(N - 1) - Math.log(denom)) / LN4;
+        const c = -Math.log1p(-safeP);
+        if (c <= 0 || !Number.isFinite(c)) return Infinity;
+
+        const k = (Math.log(N) + Math.log(N - 1) - Math.LN2 - Math.log(c)) / LN4;
         return Number.isFinite(k) ? Math.max(0.1, k) : MAX_K;
       }
 
@@ -338,11 +355,13 @@
 
       function formatN(val) {
         if (!Number.isFinite(val)) return '∞';
-        if (val >= 1e12) return formatSci(val, 2);
-        return Math.round(Math.max(1, val)).toLocaleString('en-US');
+        if (val > 1e15) return val.toExponential(2);
+        return Math.round(Math.max(2, val)).toLocaleString('en-US');
       }
 
-      function formatSpace(D) {
+      function formatSpace(K) {
+        if (!Number.isFinite(K)) return '∞';
+        const D = Math.pow(4, Math.max(0, K));
         if (!Number.isFinite(D)) return '∞';
         if (D < 1e7) return Math.round(D).toLocaleString('en-US');
         return formatSci(D, 2);
@@ -446,32 +465,32 @@
       }
 
       function render(activeInput = null) {
-        // 1. N
-        const clampedN = Math.min(MAX_N, Math.max(MIN_N, Number.isFinite(state.N) ? state.N : MAX_N));
+        // 1. N (slider range 10^1 to 10^13)
+        const clampedN = Math.min(MAX_N_SLIDER, Math.max(MIN_N_SLIDER, Number.isFinite(state.N) ? state.N : MAX_N_SLIDER));
         els.sliders.N.value = Math.log10(clampedN);
         if (activeInput !== 'N' || document.activeElement !== els.inputs.N) {
           els.inputs.N.value = formatN(state.N);
         }
-        if (state.N > MAX_N) setBadge('N', '> 10⁹');
-        else if (state.N < MIN_N) setBadge('N', '< 2');
+        if (state.N > MAX_N_SLIDER) setBadge('N', '> 10¹³');
+        else if (state.N < MIN_N_SLIDER) setBadge('N', '< 10');
         else setBadge('N', '');
 
-        // 2. K
+        // 2. K (slider range 10 to 40)
         const clampedK = Math.min(MAX_K, Math.max(MIN_K, Number.isFinite(state.K) ? state.K : MAX_K));
         els.sliders.K.value = clampedK;
         if (activeInput !== 'K' || document.activeElement !== els.inputs.K) {
-          els.inputs.K.value = Number.isFinite(state.K) ? state.K.toFixed(1) : '30.0';
+          els.inputs.K.value = Number.isFinite(state.K) ? state.K.toFixed(1) : '∞';
         }
-        els.metaSpace.textContent = formatSpace(Math.pow(4, Math.max(0, state.K)));
-        if (state.K > MAX_K) setBadge('K', '> 30');
-        else if (state.K < MIN_K) setBadge('K', '< 1');
+        els.metaSpace.textContent = formatSpace(state.K);
+        if (state.K > MAX_K) setBadge('K', '> 40');
+        else if (state.K < MIN_K) setBadge('K', '< 10');
         else setBadge('K', '');
 
-        // 3. P
+        // 3. P (Linear 0–100% or Log 10^-6%–100%)
         if (state.pLogMode) {
-          const safeP = Math.max(1e-6, Math.min(1, state.P));
+          const safeP = Math.max(1e-8, Math.min(1, state.P));
           els.sliders.P.value = Math.log10(safeP);
-          setBadge('P', state.P < 1e-6 ? '< 10⁻⁶' : '');
+          setBadge('P', state.P < 1e-8 ? '< 10⁻⁶%' : '');
         } else {
           els.sliders.P.value = Math.min(100, Math.max(0, state.P * 100));
           setBadge('P', '');
@@ -485,7 +504,6 @@
       function setPLogMode(isLog) {
         state.pLogMode = isLog;
 
-        // Toggle pill button styles
         const activeClasses = ['bg-white', 'text-indigo-600', 'shadow-sm'];
         const inactiveClasses = ['text-slate-500', 'hover:text-slate-700'];
 
@@ -497,8 +515,13 @@
 
           els.sliders.P.min = String(MIN_LOG_P);
           els.sliders.P.max = String(MAX_LOG_P);
-          els.sliders.P.step = '0.005';
-          els.ticksP.innerHTML = '<span>10<sup>-6</sup></span><span>10<sup>-4</sup></span><span>10<sup>-2</sup></span><span>10%</span><span>100%</span>';
+          els.sliders.P.step = '0.01';
+          els.ticksP.innerHTML =
+            '<span class="absolute left-0">10<sup>-6</sup>%</span>' +
+            '<span class="absolute left-1/4 -translate-x-1/2">10<sup>-4</sup>%</span>' +
+            '<span class="absolute left-1/2 -translate-x-1/2">10<sup>-2</sup>%</span>' +
+            '<span class="absolute left-3/4 -translate-x-1/2">1%</span>' +
+            '<span class="absolute right-0">100%</span>';
         } else {
           els.btnPLinear.classList.add(...activeClasses);
           els.btnPLinear.classList.remove(...inactiveClasses);
@@ -508,7 +531,12 @@
           els.sliders.P.min = '0';
           els.sliders.P.max = '100';
           els.sliders.P.step = '0.01';
-          els.ticksP.innerHTML = '<span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span>';
+          els.ticksP.innerHTML =
+            '<span class="absolute left-0">0%</span>' +
+            '<span class="absolute left-1/4 -translate-x-1/2">25%</span>' +
+            '<span class="absolute left-1/2 -translate-x-1/2">50%</span>' +
+            '<span class="absolute left-3/4 -translate-x-1/2">75%</span>' +
+            '<span class="absolute right-0">100%</span>';
         }
         render();
       }
@@ -523,7 +551,6 @@
           if (e.target.checked) {
             state.frozen = param;
           } else {
-            // Keep it checked so exactly one parameter is always frozen
             e.target.checked = true;
           }
           updateFreezeUI();
@@ -532,7 +559,8 @@
 
       // Sliders
       els.sliders.N.addEventListener('input', (e) => {
-        onParamChange('N', Math.pow(10, parseFloat(e.target.value)));
+        const v = parseFloat(e.target.value);
+        onParamChange('N', Math.round(Math.pow(10, v)));
       });
 
       els.sliders.K.addEventListener('input', (e) => {
@@ -549,14 +577,14 @@
       els.inputs.N.addEventListener('input', (e) => {
         const val = parseNum(e.target.value);
         if (Number.isFinite(val) && val >= 2) {
-          onParamChange('N', val);
+          onParamChange('N', Math.round(val));
         }
       });
       els.inputs.N.addEventListener('blur', () => render());
 
       els.inputs.K.addEventListener('input', (e) => {
         const val = parseNum(e.target.value);
-        if (Number.isFinite(val) && val >= 0.1 && val <= 100) {
+        if (Number.isFinite(val) && val >= 0.1 && val <= 200) {
           onParamChange('K', val);
         }
       });
@@ -575,12 +603,12 @@
       els.btnPLog.addEventListener('click', () => setPLogMode(true));
 
       /* =====================================================================
-         Initialize (Default: K = 10 frozen, P = 50%, N ≈ 1,206)
+         Initialize (Default: K = 15 frozen, N = 10,000, P ≈ 4.55%)
          ===================================================================== */
       window.addEventListener('DOMContentLoaded', () => {
-        state.K = 10;
-        state.P = 0.5;
-        state.N = solveN(state.K, state.P);
+        state.K = 15;
+        state.N = 10000;
+        state.P = solveP(state.N, state.K);
         state.frozen = 'K';
 
         updateFreezeUI();
