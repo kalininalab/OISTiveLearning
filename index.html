@@ -1,0 +1,1790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Birthday Problem Explorer — 4-Letter Sequences</title>
+  <style>
+    /* =========================================================================
+       Design Tokens & Base Reset (Self-Contained, Zero External Dependencies)
+       ========================================================================= */
+    :root {
+      --bg-page: #f8fafc;
+      --bg-card: #ffffff;
+      --bg-subtle: #f1f5f9;
+      --bg-frozen: #eff6ff;
+      --border-default: #e2e8f0;
+      --border-hover: #cbd5e1;
+      --border-frozen: #3b82f6;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --accent-primary: #4f46e5;
+      --accent-primary-hover: #4338ca;
+      --accent-blue: #2563eb;
+      --accent-emerald: #10b981;
+      --accent-amber: #d97706;
+      --accent-amber-bg: #fef3c7;
+      --accent-amber-border: #fde68a;
+      --shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
+      --shadow-md: 0 4px 12px -2px rgba(15, 23, 42, 0.07), 0 2px 4px -2px rgba(15, 23, 42, 0.04);
+      --shadow-frozen: 0 0 0 3px rgba(59, 130, 246, 0.14), 0 4px 12px -2px rgba(37, 99, 235, 0.1);
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg-page);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* =========================================================================
+       Layout Container
+       ========================================================================= */
+    .container {
+      width: 100%;
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 24px 16px 48px;
+    }
+
+    @media (min-width: 768px) {
+      .container {
+        padding: 32px 28px 56px;
+      }
+    }
+
+    /* =========================================================================
+       Header & Presets
+       ========================================================================= */
+    .header {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    @media (min-width: 900px) {
+      .header {
+        flex-direction: row;
+        align-items: flex-end;
+        justify-content: space-between;
+      }
+    }
+
+    .title-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--accent-primary);
+    }
+
+    .dna-pills {
+      display: inline-flex;
+      gap: 3px;
+    }
+
+    .dna-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      border-radius: 5px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+    }
+    .dna-a { background: #dcfce7; color: #166534; }
+    .dna-c { background: #dbeafe; color: #1e40af; }
+    .dna-g { background: #fef3c7; color: #92400e; }
+    .dna-t { background: #fee2e2; color: #991b1b; }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.5rem, 2.6vw, 2.05rem);
+      font-weight: 750;
+      letter-spacing: -0.025em;
+      color: var(--text-primary);
+    }
+
+    .subtitle {
+      margin: 0;
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      max-width: 620px;
+    }
+
+    .presets-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .presets-label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-right: 2px;
+    }
+
+    .preset-btn {
+      appearance: none;
+      background: var(--bg-card);
+      border: 1px solid var(--border-default);
+      color: var(--text-secondary);
+      font-family: var(--font-sans);
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 7px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .preset-btn:hover {
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+      background: #eef2ff;
+      transform: translateY(-1px);
+    }
+
+    .preset-btn:active {
+      transform: translateY(0);
+    }
+
+    /* =========================================================================
+       Status Hint Banner (Shown when 0 parameters are frozen)
+       ========================================================================= */
+    .status-banner {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      color: #92400e;
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-bottom: 18px;
+    }
+
+    .status-banner.visible {
+      display: flex;
+    }
+
+    /* =========================================================================
+       Three Parameter Control Cards
+       ========================================================================= */
+    .controls-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    @media (min-width: 860px) {
+      .controls-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+      }
+    }
+
+    .param-card {
+      position: relative;
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-default);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .param-card.is-frozen {
+      background: var(--bg-frozen);
+      border-color: var(--border-frozen);
+      box-shadow: var(--shadow-frozen);
+    }
+
+    .param-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .param-title-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .param-symbol-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .param-symbol {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: #eef2ff;
+      color: var(--accent-primary);
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 0.95rem;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .param-card.is-frozen .param-symbol {
+      background: var(--accent-blue);
+      color: #ffffff;
+    }
+
+    .param-name {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .param-desc {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    /* Freeze Checkbox Pill */
+    .freeze-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border-default);
+      background: var(--bg-subtle);
+      color: var(--text-secondary);
+      font-size: 0.76rem;
+      font-weight: 650;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s ease;
+      flex-shrink: 0;
+    }
+
+    .freeze-toggle:hover {
+      border-color: var(--border-hover);
+      background: #e2e8f0;
+    }
+
+    .param-card.is-frozen .freeze-toggle {
+      background: var(--accent-blue);
+      border-color: var(--accent-blue);
+      color: #ffffff;
+    }
+
+    .freeze-toggle input[type="checkbox"] {
+      width: 14px;
+      height: 14px;
+      margin: 0;
+      accent-color: #1d4ed8;
+      cursor: pointer;
+    }
+
+    .lock-icon {
+      width: 13px;
+      height: 13px;
+      flex-shrink: 0;
+    }
+
+    /* Value & Editable Numeric Input Row */
+    .value-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      flex: 1;
+    }
+
+    .num-input {
+      width: 100%;
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      background: var(--bg-subtle);
+      border: 1.5px solid transparent;
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      outline: none;
+      transition: all 0.15s ease;
+    }
+
+    .num-input:hover:not(:disabled) {
+      border-color: var(--border-hover);
+      background: #ffffff;
+    }
+
+    .num-input:focus {
+      border-color: var(--accent-primary);
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+    }
+
+    .num-input:disabled {
+      background: rgba(255, 255, 255, 0.65);
+      color: #1e3a8a;
+      border-color: rgba(59, 130, 246, 0.25);
+      cursor: not-allowed;
+    }
+
+    .input-unit {
+      position: absolute;
+      right: 12px;
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .num-input.has-unit {
+      padding-right: 34px;
+    }
+
+    /* Scale Mode Toggle (for P card) */
+    .scale-toggle {
+      display: inline-flex;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-default);
+      border-radius: 8px;
+      padding: 2px;
+      gap: 2px;
+      flex-shrink: 0;
+    }
+
+    .scale-btn {
+      appearance: none;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-family: var(--font-sans);
+      font-size: 0.72rem;
+      font-weight: 650;
+      padding: 4px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .scale-btn.active {
+      background: #ffffff;
+      color: var(--accent-primary);
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.1);
+    }
+
+    /* Custom Range Slider */
+    .slider-container {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 8px;
+      border-radius: 999px;
+      background: #e2e8f0;
+      outline: none;
+      cursor: pointer;
+      margin: 6px 0;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--accent-primary);
+      border: 3px solid #ffffff;
+      box-shadow: 0 2px 6px rgba(79, 70, 229, 0.35);
+      cursor: grab;
+      transition: transform 0.12s ease, background-color 0.15s ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.1);
+      background: var(--accent-primary-hover);
+    }
+
+    input[type="range"]::-webkit-slider-thumb:active {
+      cursor: grabbing;
+      transform: scale(1.15);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--accent-primary);
+      border: 3px solid #ffffff;
+      box-shadow: 0 2px 6px rgba(79, 70, 229, 0.35);
+      cursor: grab;
+      transition: transform 0.12s ease, background-color 0.15s ease;
+    }
+
+    input[type="range"]:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    input[type="range"]:disabled::-webkit-slider-thumb {
+      background: var(--accent-blue);
+      box-shadow: 0 1px 4px rgba(37, 99, 235, 0.3);
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    input[type="range"]:disabled::-moz-range-thumb {
+      background: var(--accent-blue);
+      cursor: not-allowed;
+    }
+
+    .slider-ticks {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      padding: 0 2px;
+    }
+
+    /* Card Footer Meta & Out-of-Range Badges */
+    .param-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 6px;
+      min-height: 24px;
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      padding-top: 2px;
+      border-top: 1px dashed var(--border-default);
+    }
+
+    .param-card.is-frozen .param-meta {
+      border-top-color: rgba(59, 130, 246, 0.25);
+    }
+
+    .mono-val {
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .range-badge {
+      display: none;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 650;
+      background: var(--accent-amber-bg);
+      color: var(--accent-amber);
+      border: 1px solid var(--accent-amber-border);
+    }
+
+    .range-badge.visible {
+      display: inline-flex;
+    }
+
+    /* =========================================================================
+       Stats Row
+       ========================================================================= */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    @media (min-width: 860px) {
+      .stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+      }
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .stat-label {
+      font-size: 0.76rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 4px;
+    }
+
+    .stat-formula {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: #94a3b8;
+    }
+
+    .stat-value {
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+      font-size: 1.2rem;
+      font-weight: 750;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+    }
+
+    .stat-sub {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+    }
+
+    .dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 4px;
+    }
+    .dot-amber { background: #f59e0b; }
+    .dot-emerald { background: #10b981; }
+
+    /* =========================================================================
+       Chart Card
+       ========================================================================= */
+    .chart-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .chart-header {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    @media (min-width: 680px) {
+      .chart-header {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+      }
+    }
+
+    .chart-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 0;
+    }
+
+    .chart-subtitle {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin: 2px 0 0;
+    }
+
+    .chart-legend {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 14px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .legend-line {
+      width: 16px;
+      height: 2.5px;
+      border-radius: 2px;
+    }
+    .legend-line.solid { background: var(--accent-primary); }
+    .legend-line.dashed-50 { border-top: 2px dashed #f59e0b; height: 0; }
+    .legend-line.dashed-1 { border-top: 2px dashed #10b981; height: 0; }
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent-primary);
+      border: 2px solid #ffffff;
+      box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.3);
+    }
+
+    .canvas-wrap {
+      position: relative;
+      width: 100%;
+      height: 320px;
+    }
+
+    @media (min-width: 768px) {
+      .canvas-wrap {
+        height: 360px;
+      }
+    }
+
+    canvas#collisionChart {
+      display: block;
+      width: 100%;
+      height: 100%;
+      cursor: crosshair;
+      touch-action: pan-y;
+    }
+
+    /* Hover Tooltip */
+    .chart-tooltip {
+      position: absolute;
+      pointer-events: none;
+      background: rgba(15, 23, 42, 0.94);
+      color: #f8fafc;
+      padding: 8px 11px;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-family: var(--font-mono);
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.25);
+      opacity: 0;
+      transition: opacity 0.1s ease;
+      white-space: nowrap;
+      z-index: 10;
+    }
+
+    .chart-tooltip.visible {
+      opacity: 1;
+    }
+
+    /* Footer Equations */
+    .footer-note {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .footer-note code {
+      font-family: var(--font-mono);
+      background: var(--bg-subtle);
+      padding: 2px 6px;
+      border-radius: 5px;
+      color: var(--text-secondary);
+      font-size: 0.76rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header & Presets -->
+    <header class="header">
+      <div class="title-group">
+        <div class="eyebrow">
+          <span>Birthday Problem Explorer</span>
+          <span class="dna-pills" aria-label="4-letter DNA alphabet">
+            <span class="dna-pill dna-a">A</span>
+            <span class="dna-pill dna-c">C</span>
+            <span class="dna-pill dna-g">G</span>
+            <span class="dna-pill dna-t">T</span>
+          </span>
+        </div>
+        <h1>Sequence Collision Calculator</h1>
+        <p class="subtitle">
+          Freeze any one parameter below, then drag either of the other two sliders to watch the third respond in real time for uniformly sampled 4-letter sequences.
+        </p>
+      </div>
+
+      <div class="presets-bar" aria-label="Quick presets">
+        <span class="presets-label">Presets:</span>
+        <button type="button" class="preset-btn" data-preset="k10-50">K=10 (50% risk)</button>
+        <button type="button" class="preset-btn" data-preset="k15-1">K=15 (1% risk)</button>
+        <button type="button" class="preset-btn" data-preset="k20-1m">K=20 (1M seqs)</button>
+        <button type="button" class="preset-btn" data-preset="k12-10k">K=12 (10k seqs)</button>
+      </div>
+    </header>
+
+    <!-- Subtle hint when 0 checkboxes are checked -->
+    <div id="unfrozenHint" class="status-banner" role="status" aria-live="polite">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="16" x2="12" y2="12"></line>
+        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+      </svg>
+      <span>No parameter is frozen — holding <strong>K</strong> constant when adjusting N or P, and holding <strong>N</strong> constant when adjusting K.</span>
+    </div>
+
+    <!-- Three Interactive Parameter Cards -->
+    <section class="controls-grid" aria-label="Parameter Controls">
+      <!-- CARD 1: N (Number of Sequences) -->
+      <article id="cardN" class="param-card">
+        <div class="param-header">
+          <div class="param-title-wrap">
+            <div class="param-symbol-row">
+              <span class="param-symbol">N</span>
+              <span class="param-name">Sequences</span>
+            </div>
+            <span class="param-desc">Sample size (log scale)</span>
+          </div>
+          <label class="freeze-toggle" for="freezeN">
+            <input type="checkbox" id="freezeN" data-param="N" />
+            <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path class="lock-shackle" d="M7 11V7a5 5 0 0 1 9.9-1"></path>
+            </svg>
+            <span class="freeze-text">Freeze</span>
+          </label>
+        </div>
+
+        <div class="value-row">
+          <div class="input-wrapper">
+            <input type="text" id="inputN" class="num-input" inputmode="decimal" aria-label="Number of sequences N" />
+          </div>
+        </div>
+
+        <div class="slider-container">
+          <input type="range" id="sliderN" min="0.30103" max="9" step="0.0005" aria-label="Log slider for number of sequences N" />
+          <div class="slider-ticks">
+            <span>2</span>
+            <span>10²</span>
+            <span>10⁴</span>
+            <span>10⁶</span>
+            <span>10⁹</span>
+          </div>
+        </div>
+
+        <div class="param-meta">
+          <span>log₁₀(N) = <span id="metaLogN" class="mono-val">3.08</span></span>
+          <span id="badgeN" class="range-badge"></span>
+        </div>
+      </article>
+
+      <!-- CARD 2: K (Sequence Length) -->
+      <article id="cardK" class="param-card is-frozen">
+        <div class="param-header">
+          <div class="param-title-wrap">
+            <div class="param-symbol-row">
+              <span class="param-symbol">K</span>
+              <span class="param-name">Sequence Length</span>
+            </div>
+            <span class="param-desc">Bases per sequence (4ᴷ space)</span>
+          </div>
+          <label class="freeze-toggle" for="freezeK">
+            <input type="checkbox" id="freezeK" data-param="K" checked />
+            <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path class="lock-shackle" d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+            <span class="freeze-text">Frozen</span>
+          </label>
+        </div>
+
+        <div class="value-row">
+          <div class="input-wrapper">
+            <input type="text" id="inputK" class="num-input has-unit" inputmode="decimal" aria-label="Sequence length K" disabled />
+            <span class="input-unit">bp</span>
+          </div>
+        </div>
+
+        <div class="slider-container">
+          <input type="range" id="sliderK" min="1" max="35" step="0.05" aria-label="Slider for sequence length K" disabled />
+          <div class="slider-ticks">
+            <span>1</span>
+            <span>10</span>
+            <span>20</span>
+            <span>30</span>
+            <span>35</span>
+          </div>
+        </div>
+
+        <div class="param-meta">
+          <span>Integer K needed: <span id="metaCeilK" class="mono-val">10</span></span>
+          <span id="badgeK" class="range-badge"></span>
+        </div>
+      </article>
+
+      <!-- CARD 3: P (Collision Probability) -->
+      <article id="cardP" class="param-card">
+        <div class="param-header">
+          <div class="param-title-wrap">
+            <div class="param-symbol-row">
+              <span class="param-symbol">P</span>
+              <span class="param-name">Collision Prob.</span>
+            </div>
+            <span class="param-desc">Chance of ≥ 1 identical pair</span>
+          </div>
+          <label class="freeze-toggle" for="freezeP">
+            <input type="checkbox" id="freezeP" data-param="P" />
+            <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path class="lock-shackle" d="M7 11V7a5 5 0 0 1 9.9-1"></path>
+            </svg>
+            <span class="freeze-text">Freeze</span>
+          </label>
+        </div>
+
+        <div class="value-row">
+          <div class="input-wrapper">
+            <input type="text" id="inputP" class="num-input has-unit" inputmode="decimal" aria-label="Collision probability percentage P" />
+            <span class="input-unit">%</span>
+          </div>
+          <div class="scale-toggle" role="group" aria-label="Probability slider scale">
+            <button type="button" id="btnPLinear" class="scale-btn active">Lin</button>
+            <button type="button" id="btnPLog" class="scale-btn">Log</button>
+          </div>
+        </div>
+
+        <div class="slider-container">
+          <input type="range" id="sliderP" min="0" max="100" step="0.01" aria-label="Slider for collision probability P" />
+          <div id="ticksP" class="slider-ticks">
+            <span>0%</span>
+            <span>25%</span>
+            <span>50%</span>
+            <span>75%</span>
+            <span>100%</span>
+          </div>
+        </div>
+
+        <div class="param-meta">
+          <span>Exact P = <span id="metaSciP" class="mono-val">0.5000</span></span>
+          <span id="badgeP" class="range-badge"></span>
+        </div>
+      </article>
+    </section>
+
+    <!-- Live Key Statistics Cards -->
+    <section class="stats-grid" aria-label="Key Statistics">
+      <div class="stat-card">
+        <div class="stat-label">
+          <span>Total Sequence Space</span>
+          <span class="stat-formula">4ᴷ</span>
+        </div>
+        <div id="statSpace" class="stat-value">1,048,576</div>
+        <div class="stat-sub">Distinct possible sequences</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-label">
+          <span>Expected Colliding Pairs</span>
+          <span class="stat-formula">N(N−1)/(2·4ᴷ)</span>
+        </div>
+        <div id="statPairs" class="stat-value">0.693</div>
+        <div class="stat-sub">Poisson rate parameter λ</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-label">
+          <span><span class="dot dot-amber"></span>50% Collision Threshold</span>
+          <span class="stat-formula">≈ 1.18·2ᴷ</span>
+        </div>
+        <div id="statN50" class="stat-value">1,206</div>
+        <div class="stat-sub">Sequences for 50% collision</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-label">
+          <span><span class="dot dot-emerald"></span>1% Collision Threshold</span>
+          <span class="stat-formula">≈ 0.142·2ᴷ</span>
+        </div>
+        <div id="statN1" class="stat-value">145</div>
+        <div class="stat-sub">Sequences for 1% collision</div>
+      </div>
+    </section>
+
+    <!-- Interactive Collision Probability Chart -->
+    <section class="chart-card" aria-label="Collision Probability Curve">
+      <div class="chart-header">
+        <div>
+          <h2 class="chart-title">Collision Probability vs. Number of Sequences</h2>
+          <p id="chartSubtitle" class="chart-subtitle">Showing P(N) curve for current sequence length K = 10.00</p>
+        </div>
+        <div class="chart-legend">
+          <span class="legend-item"><span class="legend-line solid"></span>P(N, K) curve</span>
+          <span class="legend-item"><span class="legend-dot"></span>Current (N, P)</span>
+          <span class="legend-item"><span class="legend-line dashed-50"></span>50% risk</span>
+          <span class="legend-item"><span class="legend-line dashed-1"></span>1% risk</span>
+        </div>
+      </div>
+
+      <div class="canvas-wrap" id="canvasWrap">
+        <canvas id="collisionChart"></canvas>
+        <div id="chartTooltip" class="chart-tooltip"></div>
+      </div>
+    </section>
+
+    <footer class="footer-note">
+      Birthday approximation: <code>P = 1 − exp(−N(N−1) / (2 · 4ᴷ))</code> &middot; Evaluated with <code>expm1</code> &amp; <code>log1p</code> for high numerical precision.
+    </footer>
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      /* =======================================================================
+         Constants & Application State
+         ======================================================================= */
+      const LN4 = Math.log(4);
+      const MIN_N = 2;
+      const MAX_N = 1e9;
+      const MIN_LOG_N = Math.log10(MIN_N);
+      const MAX_LOG_N = Math.log10(MAX_N);
+
+      const MIN_K = 1;
+      const MAX_K = 35;
+
+      const MIN_LOG_P = -6; // 10^-6 = 0.0001%
+      const MAX_LOG_P = 0;  // 10^0 = 100%
+
+      const state = {
+        N: 1206,
+        K: 10,
+        P: 0.5,
+        frozen: 'K',      // 'N' | 'K' | 'P' | null
+        pLogMode: false,  // false = Linear (0-100%), true = Log (10^-6 to 1)
+        hoverN: null      // hovered N on chart canvas
+      };
+
+      /* =======================================================================
+         DOM Element References
+         ======================================================================= */
+      const els = {
+        unfrozenHint: document.getElementById('unfrozenHint'),
+        cards: {
+          N: document.getElementById('cardN'),
+          K: document.getElementById('cardK'),
+          P: document.getElementById('cardP')
+        },
+        freezes: {
+          N: document.getElementById('freezeN'),
+          K: document.getElementById('freezeK'),
+          P: document.getElementById('freezeP')
+        },
+        inputs: {
+          N: document.getElementById('inputN'),
+          K: document.getElementById('inputK'),
+          P: document.getElementById('inputP')
+        },
+        sliders: {
+          N: document.getElementById('sliderN'),
+          K: document.getElementById('sliderK'),
+          P: document.getElementById('sliderP')
+        },
+        badges: {
+          N: document.getElementById('badgeN'),
+          K: document.getElementById('badgeK'),
+          P: document.getElementById('badgeP')
+        },
+        metaLogN: document.getElementById('metaLogN'),
+        metaCeilK: document.getElementById('metaCeilK'),
+        metaSciP: document.getElementById('metaSciP'),
+        btnPLinear: document.getElementById('btnPLinear'),
+        btnPLog: document.getElementById('btnPLog'),
+        ticksP: document.getElementById('ticksP'),
+        statSpace: document.getElementById('statSpace'),
+        statPairs: document.getElementById('statPairs'),
+        statN50: document.getElementById('statN50'),
+        statN1: document.getElementById('statN1'),
+        chartSubtitle: document.getElementById('chartSubtitle'),
+        canvasWrap: document.getElementById('canvasWrap'),
+        canvas: document.getElementById('collisionChart'),
+        tooltip: document.getElementById('chartTooltip')
+      };
+
+      /* =======================================================================
+         Mathematical Core (Birthday Problem for Alphabet = 4)
+         ======================================================================= */
+
+      /**
+       * Given N and K, compute collision probability P in [0, 1].
+       */
+      function solveP(N, K) {
+        if (!Number.isFinite(N) || N <= 1) return 0;
+        if (!Number.isFinite(K)) return K > 0 ? 0 : 1;
+        const D = Math.pow(4, K);
+        if (N > D) return 1;
+        const lambda = (N * (N - 1)) / (2 * D);
+        if (lambda >= 700) return 1;
+        if (lambda <= 0) return 0;
+        const p = -Math.expm1(-lambda);
+        return Math.min(1, Math.max(0, p));
+      }
+
+      /**
+       * Given K and P, solve for N.
+       * L = -log1p(-P); N = (1 + sqrt(1 + 8 * 4^K * L)) / 2
+       */
+      function solveN(K, P) {
+        const D = Math.pow(4, K);
+        if (P <= 0) return 1;
+        if (P >= 1) return D; // Pigeonhole saturation
+        const safeP = Math.min(P, 1 - 1e-15);
+        const L = -Math.log1p(-safeP);
+        return (1 + Math.sqrt(1 + 8 * D * L)) / 2;
+      }
+
+      /**
+       * Given N and P, solve for K.
+       * L = -log1p(-P); K = ln(N(N-1) / (2L)) / ln(4)
+       */
+      function solveK(N, P) {
+        if (N <= 1) return Infinity;
+        if (P <= 0) return Infinity;
+        if (P >= 1) return Math.log(N) / LN4;
+        const safeP = Math.min(P, 1 - 1e-15);
+        const L = -Math.log1p(-safeP);
+        // Use sum of logs to avoid overflow for very large N
+        const numeratorLog = Math.log(N) + Math.log(N - 1) - Math.log(2) - Math.log(L);
+        return numeratorLog / LN4;
+      }
+
+      /* =======================================================================
+         Formatting Helpers
+         ======================================================================= */
+      function formatInt(val) {
+        if (!Number.isFinite(val)) return '∞';
+        if (val < 1) return '1';
+        if (val >= 1e12) return formatSci(val, 2);
+        return Math.round(val).toLocaleString('en-US');
+      }
+
+      function formatSci(val, sig = 2) {
+        if (!Number.isFinite(val)) return '∞';
+        if (val === 0) return '0';
+        const exp = Math.floor(Math.log10(Math.abs(val)));
+        const mantissa = val / Math.pow(10, exp);
+        return `${mantissa.toFixed(sig)} × 10${toSuperscript(exp)}`;
+      }
+
+      function toSuperscript(num) {
+        const map = { '-': '⁻', '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹' };
+        return String(num).split('').map(ch => map[ch] || ch).join('');
+      }
+
+      function formatSpace(D) {
+        if (!Number.isFinite(D)) return '∞';
+        if (D < 1e7) return Math.round(D).toLocaleString('en-US');
+        return formatSci(D, 2);
+      }
+
+      function formatLambda(lam) {
+        if (!Number.isFinite(lam)) return '∞';
+        if (lam === 0) return '0';
+        if (lam >= 1e6 || lam < 1e-3) return formatSci(lam, 2);
+        if (lam >= 100) return lam.toFixed(1);
+        if (lam >= 1) return lam.toFixed(3);
+        return lam.toFixed(4);
+      }
+
+      function formatPercentInput(P) {
+        const pct = P * 100;
+        if (pct === 0) return '0';
+        if (pct >= 99.99995) return '100';
+        if (pct >= 1) return pct.toFixed(2);
+        if (pct >= 0.01) return pct.toFixed(4);
+        if (pct >= 1e-4) return pct.toFixed(6);
+        return pct.toExponential(2);
+      }
+
+      function formatExactP(P) {
+        if (P === 0) return '0';
+        if (P >= 1) return '1.0000';
+        if (P >= 0.001) return P.toFixed(4);
+        return P.toExponential(2);
+      }
+
+      function parseUserNumber(str) {
+        if (typeof str !== 'string') return NaN;
+        const cleaned = str.replace(/,/g, '').replace(/%/g, '').trim();
+        if (!cleaned) return NaN;
+        return Number(cleaned);
+      }
+
+      /* =======================================================================
+         Freeze Lock & Solving Coordinator
+         ======================================================================= */
+      function updateFreezeUI() {
+        const params = ['N', 'K', 'P'];
+        params.forEach(param => {
+          const isFrozen = state.frozen === param;
+          const card = els.cards[param];
+          const checkbox = els.freezes[param];
+          const input = els.inputs[param];
+          const slider = els.sliders[param];
+          const textEl = card.querySelector('.freeze-text');
+          const shackle = card.querySelector('.lock-shackle');
+
+          checkbox.checked = isFrozen;
+          card.classList.toggle('is-frozen', isFrozen);
+          input.disabled = isFrozen;
+          slider.disabled = isFrozen;
+          textEl.textContent = isFrozen ? 'Frozen' : 'Freeze';
+
+          // Update lock SVG path (closed vs open shackle)
+          if (shackle) {
+            shackle.setAttribute('d', isFrozen ? 'M7 11V7a5 5 0 0 1 10 0v4' : 'M7 11V7a5 5 0 0 1 9.9-1');
+          }
+        });
+
+        els.unfrozenHint.classList.toggle('visible', state.frozen === null);
+      }
+
+      /**
+       * Called whenever the user changes parameter `changedParam` ('N' | 'K' | 'P').
+       * Keeps the frozen parameter constant and solves for the third parameter.
+       */
+      function onParameterChanged(changedParam, newValue) {
+        if (!Number.isFinite(newValue)) return;
+
+        // Apply incoming value
+        state[changedParam] = newValue;
+
+        // Determine which parameter is held constant
+        let held = state.frozen;
+        if (!held || held === changedParam) {
+          // Graceful fallback when 0 are frozen
+          held = (changedParam === 'K') ? 'N' : 'K';
+        }
+
+        // Solve for the remaining third parameter
+        if (changedParam === 'N') {
+          if (held === 'K') {
+            state.P = solveP(state.N, state.K);
+          } else {
+            // held === 'P'
+            state.K = solveK(state.N, state.P);
+          }
+        } else if (changedParam === 'K') {
+          if (held === 'N') {
+            state.P = solveP(state.N, state.K);
+          } else {
+            // held === 'P'
+            state.N = solveN(state.K, state.P);
+          }
+        } else if (changedParam === 'P') {
+          if (held === 'K') {
+            state.N = solveN(state.K, state.P);
+          } else {
+            // held === 'N'
+            state.K = solveK(state.N, state.P);
+          }
+        }
+
+        renderAll(changedParam);
+      }
+
+      /* =======================================================================
+         Render Controls, Badges, Stats & Chart
+         ======================================================================= */
+      function setBadge(param, text) {
+        const badge = els.badges[param];
+        if (text) {
+          badge.textContent = text;
+          badge.classList.add('visible');
+        } else {
+          badge.textContent = '';
+          badge.classList.remove('visible');
+        }
+      }
+
+      function renderAll(activeInputParam = null) {
+        // --- 1. Render N ---
+        const clampedN = Math.min(MAX_N, Math.max(MIN_N, Number.isFinite(state.N) ? state.N : MAX_N));
+        els.sliders.N.value = Math.log10(clampedN);
+        if (activeInputParam !== 'N' || document.activeElement !== els.inputs.N) {
+          els.inputs.N.value = formatInt(state.N);
+        }
+        els.metaLogN.textContent = (Number.isFinite(state.N) && state.N > 0)
+          ? Math.log10(state.N).toFixed(2)
+          : '—';
+
+        if (!Number.isFinite(state.N) || state.N > MAX_N) {
+          setBadge('N', 'Exceeds max (> 10⁹)');
+        } else if (state.N < MIN_N) {
+          setBadge('N', 'Below min (< 2)');
+        } else {
+          setBadge('N', '');
+        }
+
+        // --- 2. Render K ---
+        const clampedK = Math.min(MAX_K, Math.max(MIN_K, Number.isFinite(state.K) ? state.K : MAX_K));
+        els.sliders.K.value = clampedK;
+        if (activeInputParam !== 'K' || document.activeElement !== els.inputs.K) {
+          els.inputs.K.value = Number.isFinite(state.K) ? state.K.toFixed(2) : '∞';
+        }
+        if (!Number.isFinite(state.K)) {
+          els.metaCeilK.textContent = '∞';
+        } else {
+          const ceilK = Math.max(1, Math.ceil(state.K - 1e-9));
+          els.metaCeilK.textContent = `${ceilK} bp`;
+        }
+
+        if (!Number.isFinite(state.K) || state.K > MAX_K) {
+          setBadge('K', 'Exceeds max (> 35)');
+        } else if (state.K < MIN_K) {
+          setBadge('K', 'Below min (< 1)');
+        } else {
+          setBadge('K', '');
+        }
+
+        // --- 3. Render P ---
+        if (state.pLogMode) {
+          const safeP = Math.max(1e-6, Math.min(1, state.P));
+          els.sliders.P.value = Math.log10(safeP);
+          if (state.P < 1e-6 && state.P > 0) {
+            setBadge('P', 'Below log min (< 10⁻⁶)');
+          } else if (state.P === 0) {
+            setBadge('P', 'P = 0 (below log min)');
+          } else {
+            setBadge('P', '');
+          }
+        } else {
+          els.sliders.P.value = Math.min(100, Math.max(0, state.P * 100));
+          setBadge('P', '');
+        }
+
+        if (activeInputParam !== 'P' || document.activeElement !== els.inputs.P) {
+          els.inputs.P.value = formatPercentInput(state.P);
+        }
+        els.metaSciP.textContent = formatExactP(state.P);
+
+        // --- 4. Render Live Stats ---
+        const effectiveK = Number.isFinite(state.K) ? Math.max(0, state.K) : MAX_K;
+        const D = Math.pow(4, effectiveK);
+        const lambda = (Number.isFinite(state.N) && state.N > 1 && Number.isFinite(D))
+          ? (state.N * (state.N - 1)) / (2 * D)
+          : 0;
+        const n50 = solveN(effectiveK, 0.5);
+        const n1 = solveN(effectiveK, 0.01);
+
+        els.statSpace.textContent = Number.isFinite(state.K) ? formatSpace(D) : '∞';
+        els.statPairs.textContent = formatLambda(lambda);
+        els.statN50.textContent = Number.isFinite(state.K) ? formatInt(n50) : '∞';
+        els.statN1.textContent = Number.isFinite(state.K) ? formatInt(n1) : '∞';
+
+        els.chartSubtitle.textContent = Number.isFinite(state.K)
+          ? `Showing P(N) curve for current sequence length K = ${state.K.toFixed(2)} (4ᴷ ≈ ${formatSpace(D)})`
+          : 'K is unbounded for the current parameters';
+
+        // --- 5. Redraw Chart ---
+        drawChart();
+      }
+
+      /* =======================================================================
+         Probability Scale Toggle (Linear vs Log)
+         ======================================================================= */
+      function setPLogMode(isLog) {
+        state.pLogMode = isLog;
+        els.btnPLinear.classList.toggle('active', !isLog);
+        els.btnPLog.classList.toggle('active', isLog);
+
+        if (isLog) {
+          els.sliders.P.min = String(MIN_LOG_P);
+          els.sliders.P.max = String(MAX_LOG_P);
+          els.sliders.P.step = '0.002';
+          els.ticksP.innerHTML = '<span>10⁻⁶</span><span>10⁻⁴</span><span>10⁻²</span><span>10%</span><span>100%</span>';
+        } else {
+          els.sliders.P.min = '0';
+          els.sliders.P.max = '100';
+          els.sliders.P.step = '0.01';
+          els.ticksP.innerHTML = '<span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span>';
+        }
+        renderAll();
+      }
+
+      /* =======================================================================
+         Responsive High-DPI Canvas Chart
+         ======================================================================= */
+      let chartGeometry = { padL: 58, padR: 24, padT: 20, padB: 42, width: 600, height: 320, minLogX: 0, maxLogX: 9 };
+
+      function drawChart() {
+        const canvas = els.canvas;
+        const wrap = els.canvasWrap;
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        const cssW = wrap.clientWidth;
+        const cssH = wrap.clientHeight;
+        if (cssW <= 0 || cssH <= 0) return;
+
+        if (canvas.width !== Math.round(cssW * dpr) || canvas.height !== Math.round(cssH * dpr)) {
+          canvas.width = Math.round(cssW * dpr);
+          canvas.height = Math.round(cssH * dpr);
+        }
+
+        const ctx = canvas.getContext('2d');
+        ctx.save();
+        ctx.scale(dpr, dpr);
+        ctx.clearRect(0, 0, cssW, cssH);
+
+        const padL = cssW < 480 ? 46 : 58;
+        const padR = 22;
+        const padT = 18;
+        const padB = 42;
+        const plotW = cssW - padL - padR;
+        const plotH = cssH - padT - padB;
+
+        // Adapt X-axis right bound if K is very large (> 28) so S-curve stays visible
+        const effectiveK = Number.isFinite(state.K) ? Math.max(0.5, state.K) : MAX_K;
+        const n50 = solveN(effectiveK, 0.5);
+        const logN50 = Number.isFinite(n50) && n50 > 1 ? Math.log10(n50) : 9;
+        const minLogX = 0; // 10^0 = 1
+        const maxLogX = Math.max(9, Math.min(12, Math.ceil(logN50 + 1.2)));
+
+        chartGeometry = { padL, padR, padT, padB, plotW, plotH, cssW, cssH, minLogX, maxLogX };
+
+        const xOfLogN = (logN) => padL + ((logN - minLogX) / (maxLogX - minLogX)) * plotW;
+        const yOfP = (p) => padT + (1 - Math.min(1, Math.max(0, p))) * plotH;
+
+        // --- Gridlines (Horizontal) ---
+        ctx.strokeStyle = '#f1f5f9';
+        ctx.lineWidth = 1;
+        const yTicks = [0, 0.25, 0.5, 0.75, 1.0];
+        ctx.font = '500 11px ui-monospace, SFMono-Regular, Menlo, monospace';
+        ctx.fillStyle = '#64748b';
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+
+        yTicks.forEach(p => {
+          const y = yOfP(p);
+          ctx.beginPath();
+          ctx.moveTo(padL, y);
+          ctx.lineTo(padL + plotW, y);
+          ctx.stroke();
+          ctx.fillText(`${Math.round(p * 100)}%`, padL - 8, y);
+        });
+
+        // --- Gridlines (Vertical Log X) ---
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        const stepExp = (maxLogX > 10 && cssW < 500) ? 2 : 1;
+        for (let exp = minLogX; exp <= maxLogX; exp += stepExp) {
+          const x = xOfLogN(exp);
+          ctx.strokeStyle = '#f1f5f9';
+          ctx.beginPath();
+          ctx.moveTo(x, padT);
+          ctx.lineTo(x, padT + plotH);
+          ctx.stroke();
+
+          const label = exp === 0 ? '1' : `10${toSuperscript(exp)}`;
+          ctx.fillStyle = '#64748b';
+          ctx.fillText(label, x, padT + plotH + 8);
+        }
+
+        // X-axis Title
+        ctx.font = '600 11px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+        ctx.fillStyle = '#475569';
+        ctx.textAlign = 'center';
+        ctx.fillText('Number of Sequences (N, log scale)', padL + plotW / 2, cssH - 14);
+
+        // --- Dashed Reference Lines (50% and 1%) ---
+        // 50% Line
+        const y50 = yOfP(0.5);
+        ctx.save();
+        ctx.setLineDash([5, 5]);
+        ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(padL, y50);
+        ctx.lineTo(padL + plotW, y50);
+        ctx.stroke();
+        ctx.restore();
+
+        ctx.font = '600 10.5px ui-monospace, SFMono-Regular, Menlo, monospace';
+        ctx.fillStyle = '#d97706';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'bottom';
+        ctx.fillText('50%', padL + 6, y50 - 3);
+
+        // 1% Line
+        const y1 = yOfP(0.01);
+        ctx.save();
+        ctx.setLineDash([4, 4]);
+        ctx.strokeStyle = '#10b981';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(padL, y1);
+        ctx.lineTo(padL + plotW, y1);
+        ctx.stroke();
+        ctx.restore();
+
+        ctx.fillStyle = '#059669';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'bottom';
+        ctx.fillText('1%', padL + 6, y1 - 3);
+
+        // --- Plot S-Curve for Current K ---
+        if (Number.isFinite(state.K)) {
+          const samples = 240;
+          const pts = [];
+          for (let i = 0; i <= samples; i++) {
+            const frac = i / samples;
+            const logN = minLogX + frac * (maxLogX - minLogX);
+            const nVal = Math.pow(10, logN);
+            const pVal = solveP(nVal, state.K);
+            pts.push({ x: xOfLogN(logN), y: yOfP(pVal) });
+          }
+
+          // Gradient Area Fill
+          const grad = ctx.createLinearGradient(0, padT, 0, padT + plotH);
+          grad.addColorStop(0, 'rgba(79, 70, 229, 0.18)');
+          grad.addColorStop(1, 'rgba(79, 70, 229, 0.01)');
+
+          ctx.beginPath();
+          ctx.moveTo(pts[0].x, padT + plotH);
+          for (let i = 0; i < pts.length; i++) {
+            ctx.lineTo(pts[i].x, pts[i].y);
+          }
+          ctx.lineTo(pts[pts.length - 1].x, padT + plotH);
+          ctx.closePath();
+          ctx.fillStyle = grad;
+          ctx.fill();
+
+          // Curve Stroke
+          ctx.beginPath();
+          for (let i = 0; i < pts.length; i++) {
+            if (i === 0) ctx.moveTo(pts[i].x, pts[i].y);
+            else ctx.lineTo(pts[i].x, pts[i].y);
+          }
+          ctx.strokeStyle = '#4f46e5';
+          ctx.lineWidth = 2.6;
+          ctx.lineJoin = 'round';
+          ctx.stroke();
+        }
+
+        // --- Axes Border ---
+        ctx.strokeStyle = '#cbd5e1';
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.moveTo(padL, padT);
+        ctx.lineTo(padL, padT + plotH);
+        ctx.lineTo(padL + plotW, padT + plotH);
+        ctx.stroke();
+
+        // --- Hover Crosshair ---
+        if (state.hoverN !== null && Number.isFinite(state.K)) {
+          const hLogN = Math.log10(state.hoverN);
+          if (hLogN >= minLogX && hLogN <= maxLogX) {
+            const hx = xOfLogN(hLogN);
+            const hp = solveP(state.hoverN, state.K);
+            const hy = yOfP(hp);
+
+            ctx.save();
+            ctx.setLineDash([3, 3]);
+            ctx.strokeStyle = 'rgba(100, 116, 139, 0.5)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(hx, padT);
+            ctx.lineTo(hx, padT + plotH);
+            ctx.stroke();
+            ctx.restore();
+
+            ctx.beginPath();
+            ctx.arc(hx, hy, 4.5, 0, Math.PI * 2);
+            ctx.fillStyle = '#0f172a';
+            ctx.fill();
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+          }
+        }
+
+        // --- Highlighted Live Point (Current N, P) ---
+        if (Number.isFinite(state.N) && state.N >= 1) {
+          const curLogN = Math.log10(state.N);
+          const clampedLogX = Math.min(maxLogX, Math.max(minLogX, curLogN));
+          const cx = xOfLogN(clampedLogX);
+          const cy = yOfP(state.P);
+          const outOfRight = curLogN > maxLogX;
+
+          // Drop-lines
+          ctx.save();
+          ctx.setLineDash([3, 3]);
+          ctx.strokeStyle = 'rgba(79, 70, 229, 0.45)';
+          ctx.lineWidth = 1.2;
+          ctx.beginPath();
+          ctx.moveTo(cx, cy);
+          ctx.lineTo(cx, padT + plotH);
+          ctx.moveTo(cx, cy);
+          ctx.lineTo(padL, cy);
+          ctx.stroke();
+          ctx.restore();
+
+          // Outer glow ring
+          ctx.beginPath();
+          ctx.arc(cx, cy, 11, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(79, 70, 229, 0.18)';
+          ctx.fill();
+
+          // Inner dot
+          ctx.beginPath();
+          ctx.arc(cx, cy, 6, 0, Math.PI * 2);
+          ctx.fillStyle = outOfRight ? '#d97706' : '#4f46e5';
+          ctx.fill();
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 2.5;
+          ctx.stroke();
+
+          // Callout label near live point
+          const labelText = `N=${formatInt(state.N)}, P=${formatPercentInput(state.P)}%`;
+          ctx.font = '600 11px ui-monospace, SFMono-Regular, Menlo, monospace';
+          const tw = ctx.measureText(labelText).width;
+          const boxW = tw + 14;
+          const boxH = 22;
+          let bx = cx + 12;
+          let by = cy - 28;
+          if (bx + boxW > padL + plotW) bx = cx - boxW - 12;
+          if (by < padT + 4) by = cy + 12;
+
+          ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+          roundRect(ctx, bx, by, boxW, boxH, 6);
+          ctx.fill();
+
+          ctx.fillStyle = '#ffffff';
+          ctx.textAlign = 'left';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(labelText, bx + 7, by + boxH / 2 + 0.5);
+        }
+
+        ctx.restore();
+      }
+
+      function roundRect(ctx, x, y, w, h, r) {
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.arcTo(x + w, y, x + w, y + h, r);
+        ctx.arcTo(x + w, y + h, x, y + h, r);
+        ctx.arcTo(x, y + h, x, y, r);
+        ctx.arcTo(x, y, x + w, y, r);
+        ctx.closePath();
+      }
+
+      /* =======================================================================
+         Event Listeners
+         ======================================================================= */
+
+      // 1. Freeze Checkboxes (Mutually exclusive: at most 1 frozen)
+      Object.keys(els.freezes).forEach(param => {
+        els.freezes[param].addEventListener('change', (e) => {
+          if (e.target.checked) {
+            state.frozen = param;
+          } else if (state.frozen === param) {
+            state.frozen = null;
+          }
+          updateFreezeUI();
+        });
+      });
+
+      // 2. Sliders
+      els.sliders.N.addEventListener('input', (e) => {
+        const logN = parseFloat(e.target.value);
+        onParameterChanged('N', Math.pow(10, logN));
+      });
+
+      els.sliders.K.addEventListener('input', (e) => {
+        const kVal = parseFloat(e.target.value);
+        onParameterChanged('K', kVal);
+      });
+
+      els.sliders.P.addEventListener('input', (e) => {
+        const raw = parseFloat(e.target.value);
+        const pVal = state.pLogMode ? Math.pow(10, raw) : raw / 100;
+        onParameterChanged('P', Math.min(1, Math.max(0, pVal)));
+      });
+
+      // 3. Synchronized Editable Numeric Inputs
+      els.inputs.N.addEventListener('input', (e) => {
+        const val = parseUserNumber(e.target.value);
+        if (Number.isFinite(val) && val >= 1) {
+          onParameterChanged('N', val);
+        }
+      });
+      els.inputs.N.addEventListener('blur', () => renderAll());
+
+      els.inputs.K.addEventListener('input', (e) => {
+        const val = parseUserNumber(e.target.value);
+        if (Number.isFinite(val) && val >= 0.1 && val <= 100) {
+          onParameterChanged('K', val);
+        }
+      });
+      els.inputs.K.addEventListener('blur', () => renderAll());
+
+      els.inputs.P.addEventListener('input', (e) => {
+        const val = parseUserNumber(e.target.value);
+        if (Number.isFinite(val) && val >= 0 && val <= 100) {
+          onParameterChanged('P', val / 100);
+        }
+      });
+      els.inputs.P.addEventListener('blur', () => renderAll());
+
+      // 4. P Scale Mode Toggle
+      els.btnPLinear.addEventListener('click', () => setPLogMode(false));
+      els.btnPLog.addEventListener('click', () => setPLogMode(true));
+
+      // 5. Quick Preset Buttons
+      document.querySelectorAll('.preset-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const preset = btn.getAttribute('data-preset');
+          if (preset === 'k10-50') {
+            state.K = 10;
+            state.P = 0.5;
+            state.N = solveN(10, 0.5);
+          } else if (preset === 'k15-1') {
+            state.K = 15;
+            state.P = 0.01;
+            state.N = solveN(15, 0.01);
+          } else if (preset === 'k20-1m') {
+            state.K = 20;
+            state.N = 1_000_000;
+            state.P = solveP(1_000_000, 20);
+          } else if (preset === 'k12-10k') {
+            state.K = 12;
+            state.N = 10_000;
+            state.P = solveP(10_000, 12);
+          }
+          renderAll();
+        });
+      });
+
+      // 6. Chart Hover & Click Interaction
+      function getNFromCanvasX(clientX) {
+        const rect = els.canvas.getBoundingClientRect();
+        const x = clientX - rect.left;
+        const { padL, plotW, minLogX, maxLogX } = chartGeometry;
+        if (x < padL || x > padL + plotW) return null;
+        const frac = (x - padL) / plotW;
+        const logN = minLogX + frac * (maxLogX - minLogX);
+        return Math.pow(10, logN);
+      }
+
+      els.canvas.addEventListener('mousemove', (e) => {
+        const nVal = getNFromCanvasX(e.clientX);
+        if (nVal === null || !Number.isFinite(state.K)) {
+          state.hoverN = null;
+          els.tooltip.classList.remove('visible');
+          drawChart();
+          return;
+        }
+
+        state.hoverN = nVal;
+        const pVal = solveP(nVal, state.K);
+        const rect = els.canvasWrap.getBoundingClientRect();
+        const relX = e.clientX - rect.left;
+        const relY = e.clientY - rect.top;
+
+        els.tooltip.innerHTML = `N = ${formatInt(nVal)}<br>P = ${formatPercentInput(pVal)}%`;
+        els.tooltip.classList.add('visible');
+
+        const tipW = els.tooltip.offsetWidth;
+        const leftPos = (relX + 14 + tipW > rect.width) ? (relX - tipW - 14) : (relX + 14);
+        const topPos = Math.max(8, relY - 36);
+        els.tooltip.style.left = `${leftPos}px`;
+        els.tooltip.style.top = `${topPos}px`;
+
+        drawChart();
+      });
+
+      els.canvas.addEventListener('mouseleave', () => {
+        state.hoverN = null;
+        els.tooltip.classList.remove('visible');
+        drawChart();
+      });
+
+      els.canvas.addEventListener('click', (e) => {
+        // Clicking the chart jumps N to that position (unless N is frozen)
+        if (state.frozen === 'N') return;
+        const nVal = getNFromCanvasX(e.clientX);
+        if (nVal !== null && nVal >= 2) {
+          onParameterChanged('N', nVal);
+        }
+      });
+
+      // 7. Resize Observer for Responsive Canvas
+      if (typeof ResizeObserver !== 'undefined') {
+        const ro = new ResizeObserver(() => drawChart());
+        ro.observe(els.canvasWrap);
+      } else {
+        window.addEventListener('resize', drawChart);
+      }
+
+      /* =======================================================================
+         Initialize App
+         ======================================================================= */
+      window.addEventListener('DOMContentLoaded', () => {
+        // Start with K = 10 frozen and N = 1,206 (~50% collision risk)
+        state.K = 10;
+        state.P = 0.5;
+        state.N = solveN(state.K, state.P);
+        state.frozen = 'K';
+
+        updateFreezeUI();
+        renderAll();
+      });
+    })();
+  </script>
+</body>
+</html>

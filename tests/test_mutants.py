@@ -1,4 +1,4 @@
-from simulation.mutants import ep_pcr
+from data_factory.mutants import ep_pcr
 
 
 def test_ep_pcr():
